@@ -33,6 +33,14 @@ const userSchema = new mongoose.Schema({
         country: { type: String, default: "" },
         zipCode: { type: String, default: "" },
     },
+    isDonating: {
+        type: Boolean,
+        default: false,
+    },
+    phoneNumber: {
+        type: String,
+        required: [true, "Phone Number is required"],
+    },
     role: {
         type: String,
         default: "user",

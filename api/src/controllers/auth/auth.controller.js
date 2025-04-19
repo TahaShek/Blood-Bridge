@@ -6,6 +6,8 @@ import { ApiResponse } from "../../utils/ApiResponse.js"
 import { User } from "../../models/user.model.js";
 import jwt from "jsonwebtoken"
 import { MaxAgeOfAccessToken, MaxAgeOfRefreshToken } from "../../constants/constants.js";
+import { createUserRecord } from "../../features/user/analytics.feature.js";
+import { incrementUserStatsOnSignup } from "../../features/admin/adminAnalytics.feature.js";
 
 const options = {
     httpOnly: true,
@@ -68,7 +70,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const signUp = asyncHandler(async (req, res) => {
 
-    const { name, email, password, bloodGroup, address } = req.body;
+    const { name, email, password, bloodGroup, address, phoneNumber } = req.body;
 
     const doesUserExist = await User.findOne({ email });
 
@@ -81,7 +83,8 @@ const signUp = asyncHandler(async (req, res) => {
         email,
         password,
         bloodGroup,
-        address
+        address,
+        phoneNumber,
     });
 
     const createdUser = await User.findById(user._id).select("-password -refreshToken");
@@ -89,11 +92,15 @@ const signUp = asyncHandler(async (req, res) => {
     if (!createdUser) {
         throw new ApiError(500, "something went wrong while registering user");
     }
+    
+    await incrementUserStatsOnSignup(createdUser)
+
+    const userRecord = await createUserRecord(createdUser._id);
 
     return res.status(201).json(
         new ApiResponse(
             201,
-            { user: createdUser },
+            { user: createdUser, record: userRecord },
             "user created successfully"
         )
     );
