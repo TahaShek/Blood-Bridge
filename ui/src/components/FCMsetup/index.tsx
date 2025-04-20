@@ -1,7 +1,7 @@
 // src/components/FCMSetup.jsx
 import { useEffect } from "react";
 import { messaging, getToken, onMessage } from "../../firebase/index.ts";
-import { firebaseTokenPublicKey } from "../../constants/index.js";
+import { baseURL, firebaseTokenPublicKey } from "../../constants/index.js";
 
 const FCMSetup = () => {
   useEffect(() => {
@@ -15,7 +15,7 @@ const FCMSetup = () => {
           console.log("FCM Token:", token);
 
           // Save token to backend
-          await fetch("http://localhost:5000/api/save-token", {
+          await fetch(`${baseURL}/user/fcm/save-token`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
