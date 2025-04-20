@@ -38,6 +38,12 @@ import analyticsRoutes from "./routes/admin/analytics.routes.js"
 app.use("/api/v1/admin/analytics", analyticsRoutes);
 /* /admin routes */
 
+/* fcm routes */
+import fcmRoutes from "./routes/fcm/fcm.routes.js"
+
+app.use("/api/v1/user/fcm", fcmRoutes);
+/* /fcm routes */
+
 app.get("/", (req, res) => {
     res.send("Welcome...");
 });

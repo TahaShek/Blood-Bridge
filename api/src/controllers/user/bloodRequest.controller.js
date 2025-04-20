@@ -6,6 +6,7 @@ import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { incrementRequestStats } from "../../features/user/analytics.feature.js";
 import { incrementTotalBloodRequestsStats } from "../../features/admin/adminAnalytics.feature.js";
+import { sendBloodRequestNotification } from "../../features/notifications/fcm.feature.js";
 
 const createBloodRequest = asyncHandler(async (req, res) => {
     const { user } = req;
@@ -19,8 +20,14 @@ const createBloodRequest = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while creating request");
     }
 
-    await incrementRequestStats(user._id);
+    const response = await sendBloodRequestNotification({ ...bloodRequest, requesterName: user.name })
 
+    if(response?.status !== 200) {
+        throw new ApiError(response.status, response.message);
+    }
+    
+    await incrementRequestStats(user._id);
+    
     await incrementTotalBloodRequestsStats();
 
     return res.status(201).json(
