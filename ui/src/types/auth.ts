@@ -1,11 +1,15 @@
+import { strict } from "assert";
+
 export type LoginCredentials = {
   email: string;
   password: string;
 };
 
 export type RegisterCredentials = {
-  firstName: string;
-  lastName: string;
+  name: string;
+  phoneNumber: string;
+  city: string;
+  bloodGroup: string;
   email: string;
   password: string;
 };
