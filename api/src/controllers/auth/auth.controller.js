@@ -92,7 +92,7 @@ const signUp = asyncHandler(async (req, res) => {
     if (!createdUser) {
         throw new ApiError(500, "something went wrong while registering user");
     }
-    
+
     await incrementUserStatsOnSignup(createdUser)
 
     const userRecord = await createUserRecord(createdUser._id);
