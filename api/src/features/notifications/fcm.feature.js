@@ -3,7 +3,7 @@ import { User } from "../../models/user.model.js"
 
 const sendBloodRequestNotification = async ({ bloodGroup, city, requesterName, title = "Blood Donation Request", urgencyLevel }) => {
     try {
-        const users = await User.find({ bloodGroup, city });
+        const users = await User.find({ bloodGroup, "address.city": city,  });
         const tokens = users.map((u) => u.fcmToken).filter(Boolean);
 
         if (!tokens.length) {
@@ -17,7 +17,6 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requesterName, t
             notification: {
                 title: title,
                 body: `${requesterName} needs ${bloodGroup} near ${city}`,
-                urgencyLevel,
             },
             tokens,
         };
