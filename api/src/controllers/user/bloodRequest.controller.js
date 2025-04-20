@@ -20,7 +20,7 @@ const createBloodRequest = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while creating request");
     }
 
-    const response = await sendBloodRequestNotification({ ...bloodRequest, requesterName: user.name })
+    const response = await sendBloodRequestNotification({ ...req.body, requesterName: user.name })
 
     if(response?.status !== 200) {
         throw new ApiError(response.status, response.message);
