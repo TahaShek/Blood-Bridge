@@ -21,20 +21,13 @@ const ensureUserAnalytics = async (userId) => {
 };
 
 const incrementRequestStats = async (userId) => {
-    await ensureUserAnalytics(userId);
+    const userAnalytics = await ensureUserAnalytics(userId);
 
-    await UserAnalytics.findOneAndUpdate(
-        { user: userId },
-        {
-            $inc: {
-                "requestStats.total": 1,
-                "requestStats.pending": 1,
-            },
-            $set: {
-                lastRequestAt: new Date(),
-            },
-        }
-    );
+    userAnalytics.requestStats.total += 1;
+    userAnalytics.requestStats.pending += 1;
+    userAnalytics.lastRequestAt = new Date();
+
+    await userAnalytics.save();
 };
 
 const updateRequestStatusStats = async (userId, fromStatus, toStatus) => {

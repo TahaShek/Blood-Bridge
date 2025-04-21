@@ -13,12 +13,14 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requesterName, t
             };
         };
 
+        const uniqueTokens = [...new Set(tokens)];
+
         const message = {
             notification: {
                 title: title,
                 body: `${requesterName} needs ${bloodGroup} near ${city}`,
             },
-            tokens,
+            tokens: uniqueTokens,
         };
 
         await admin.messaging().sendEachForMulticast(message);
