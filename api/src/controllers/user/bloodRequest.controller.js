@@ -7,6 +7,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { incrementRequestStats } from "../../features/user/analytics.feature.js";
 import { incrementTotalBloodRequestsStats } from "../../features/admin/adminAnalytics.feature.js";
 import { sendBloodRequestNotification } from "../../features/notifications/fcm.feature.js";
+import { filters } from "../../constants/constants.js";
 
 const createBloodRequest = asyncHandler(async (req, res) => {
     const { user } = req;
@@ -41,8 +42,20 @@ const createBloodRequest = asyncHandler(async (req, res) => {
 
 const getAllUserBloodRequests = asyncHandler(async (req, res) => {
     const {user} = req;
+    
+    const query = { requestor: user._id };
 
-    const bloodRequests = await BloodRequest.find({ requestor: user._id });
+    filters.forEach((key) => {
+        if(req.query[key]) {
+            if(key === "hospital") {
+                query[key] = { $regex: req.query[key], $options: "i" };
+            } else {
+                query[key] = req.query[key];
+            }
+        }
+    })
+
+    const bloodRequests = await BloodRequest.find(query);
 
     if(bloodRequests.length === 0) {
         throw new ApiError(404, "No requests found against user");

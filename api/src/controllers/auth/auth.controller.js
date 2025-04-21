@@ -167,10 +167,35 @@ const logOut = asyncHandler(async (req, res) => {
     );
 });
 
+const getUserProfile = asyncHandler(async (req, res) => {
+    const { user } = req;
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { user },
+            `User Fetched Successfully - ${user.name}`
+        )
+    );
+});
+
+const setUserDonationStatus = asyncHandler(async (req, res) => {
+    const { user } = req;
+
+    const updatedUser = await User.findByIdAndUpdate(user._id, { isDonating: !user.isDonating }, { new: true });
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { user: updatedUser },
+            `User Updated Successfully - ${user.name}`
+        )
+    );
+});
+
 const tryMe = async (req, res) => {
     return res.status(200).json(
         new ApiResponse(200, { "user": "va lo lo tab tab taba di va saktu sak sak saka lee" }, "ok")
     )
 }
 
-export { signUp, signIn, refreshAccessToken, logOut, tryMe };
+export { signUp, signIn, refreshAccessToken, logOut, getUserProfile, setUserDonationStatus, tryMe };
