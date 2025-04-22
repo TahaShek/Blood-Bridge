@@ -5,13 +5,17 @@ import "./index.css";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/index.ts";
 import { AuthProvider } from "./providers/AuthProvider"; // Import the AuthProvider
+import { BloodRequestProvider } from "./providers/BloodRequestProvider.tsx";
+
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       {" "}
+      <BloodRequestProvider>
+        <RouterProvider router={router} />
+      </BloodRequestProvider>
       {/* Wrap the RouterProvider with AuthProvider */}
-      <RouterProvider router={router} />
     </AuthProvider>
   </StrictMode>
 );

@@ -35,7 +35,7 @@ const FCMSetup = () => {
     // Listen for foreground messages
     onMessage(messaging, (payload: any) => {
       console.log("Message received in foreground:", payload);
-      alert(payload.notification.title + ": " + payload.notification.body);
+      // alert(payload.notification.title + ": " + payload.notification.body);
     });
   }, []);
 

@@ -1,4 +1,4 @@
-import { RequestForm } from "@/features/blood-request/components/BloodRequestForm";
+import RequestForm from "@/features/blood-request/components/BloodRequestForm";
 
 export default function NewRequestPage() {
   return (

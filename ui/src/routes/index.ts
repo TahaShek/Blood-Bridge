@@ -2,13 +2,14 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy } from "react";
 import * as React from "react";
 import Layout from "@/pages/layout";
-import HomePage from "@/pages/home";
-import DashboardPage from "@/pages/dashboard";
-import RequestsPage from "@/pages/blood-request";
-import NewRequestPage from "@/pages/blood-request/request-from";
-import HistoryPage from "@/pages/history";
-import NotificationsPage from "@/pages/notifications";
 
+
+const HomePage = lazy(() => import("@/pages/home"));
+const DashboardPage = lazy(() => import("@/pages/dashboard"));
+const RequestsPage = lazy(() => import("@/pages/blood-request"));
+const NewRequestPage = lazy(() => import("@/pages/blood-request/request-from"));
+const HistoryPage = lazy(() => import("@/pages/history"));
+const NotificationsPage = lazy(() => import("@/pages/notifications"));
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("@/components/ui/auth-image-panel"));
 
@@ -30,7 +31,6 @@ const router = createBrowserRouter([
         path: "dashboard",
         element: React.createElement(DashboardPage),
       },
-
       {
         path: "requests",
         children: [
@@ -44,7 +44,6 @@ const router = createBrowserRouter([
           },
         ],
       },
-
       {
         path: "notifications",
         element: React.createElement(NotificationsPage),
@@ -55,7 +54,6 @@ const router = createBrowserRouter([
       },
     ],
   },
-
   {
     path: "home",
     element: React.createElement(HomePage),

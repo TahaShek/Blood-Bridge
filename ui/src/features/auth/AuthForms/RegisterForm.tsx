@@ -37,7 +37,8 @@ export function RegisterForm() {
 
   const onSubmit = async (data: RegistrationForm) => {
     try {
-      // Fake API call
+      delete data.confirmPassword;
+      delete data.city;
       auth.register(data);
       await new Promise((res) => setTimeout(res, 1000));
       toast({
@@ -74,6 +75,7 @@ export function RegisterForm() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
+            
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
