@@ -1,59 +1,53 @@
-"use client"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { toast } from "@/components/ui/use-toast";
+import { BloodRequestList } from "@/types";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { toast } from "@/components/ui/use-toast"
+type RequestCardProps = {
+  request: BloodRequestList;
+  isOwner: boolean;
+  onRefresh?: () => void;
+};
 
-interface RequestCardProps {
-  request: {
-    id: string
-    bloodType: string
-    donorsNeeded: number
-    city: string
-    urgency: string
-    message: string
-    createdAt: string
-    status: string
-    acceptedDonors: any[]
-    requesterName?: string
-    requesterContact?: string
-  }
-  isOwner: boolean
-}
-
-export function RequestCard({ request, isOwner }: RequestCardProps) {
-  const [isAccepting, setIsAccepting] = useState(false)
-  const [isAccepted, setIsAccepted] = useState(false)
-  const [showContact, setShowContact] = useState(false)
+export function RequestCard({ request, isOwner, onRefresh }: RequestCardProps) {
+  const [isAccepting, setIsAccepting] = useState(false);
+  const [isAccepted, setIsAccepted] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   const handleAccept = () => {
-    setIsAccepting(true)
-
-    // Simulate API call
+    setIsAccepting(true);
     setTimeout(() => {
-      setIsAccepted(true)
-      setIsAccepting(false)
+      setIsAccepted(true);
+      setIsAccepting(false);
       toast({
         title: "Request accepted!",
-        description: "You have accepted this blood request. Contact information is now available.",
-      })
-    }, 1500)
-  }
+        description:
+          "You have accepted this blood request. Contact information is now available.",
+      });
+    }, 1500);
+  };
 
   const handleShowContact = () => {
-    setShowContact(true)
-  }
+    setShowContact(true);
+  };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+  const formatDate = (dateString: string | Date) => {
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
-    }).format(date)
-  }
+    }).format(date);
+  };
 
   return (
     <Card>
@@ -61,13 +55,17 @@ export function RequestCard({ request, isOwner }: RequestCardProps) {
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
-              {request.bloodType} Blood Request
+              {request.bloodGroup} Blood Request
               <Badge
                 variant={
-                  request.urgency === "High" ? "destructive" : request.urgency === "Medium" ? "default" : "outline"
+                  request.urgencyLevel === "High"
+                    ? "destructive"
+                    : request.urgencyLevel === "Medium"
+                      ? "default"
+                      : "outline"
                 }
               >
-                {request.urgency} Urgency
+                {request.urgencyLevel} Urgency
               </Badge>
             </CardTitle>
             <CardDescription>
@@ -76,10 +74,15 @@ export function RequestCard({ request, isOwner }: RequestCardProps) {
           </div>
         </div>
       </CardHeader>
+
       <CardContent className="pb-2">
         <div className="space-y-2">
           <div className="text-sm">
-            <span className="font-medium">Donors Needed:</span> {request.donorsNeeded}
+            <span className="font-medium">Donors Needed:</span>{" "}
+            {request.numberOfDonors}
+          </div>
+          <div className="text-sm">
+            <span className="font-medium">Hospital:</span> {request.hospital}
           </div>
           <div className="text-sm">
             <span className="font-medium">Message:</span> {request.message}
@@ -88,45 +91,57 @@ export function RequestCard({ request, isOwner }: RequestCardProps) {
             <span className="font-medium">Status:</span>{" "}
             <span
               className={
-                request.status === "fulfilled"
+                request.requestStatus === "Fulfilled"
                   ? "text-green-600"
-                  : request.status === "pending"
+                  : request.requestStatus === "Pending"
                     ? "text-amber-600"
                     : "text-red-600"
               }
             >
-              {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+              {request.requestStatus}
             </span>
           </div>
-          {request.acceptedDonors.length > 0 && (
-            <div className="text-sm">
-              <span className="font-medium">Accepted Donors:</span> {request.acceptedDonors.length}/
-              {request.donorsNeeded}
-            </div>
-          )}
 
           {!isOwner && isAccepted && (
             <div className="mt-4 p-3 bg-green-50 rounded-md border border-green-200">
-              <p className="font-medium text-green-800 mb-1">Contact Information</p>
-              <p className="text-sm text-green-700">Name: {request.requesterName}</p>
-              <p className="text-sm text-green-700">Phone: {request.requesterContact}</p>
+              <p className="font-medium text-green-800 mb-1">
+                Contact Information
+              </p>
+              <p className="text-sm text-green-700">
+                Phone: {request.contactNumber}
+              </p>
             </div>
           )}
         </div>
       </CardContent>
+
       <CardFooter>
         {isOwner ? (
-          <Button variant="outline" className="w-full" disabled={request.status === "fulfilled"}>
-            {request.status === "fulfilled" ? "Fulfilled" : "Mark as Fulfilled"}
+          <Button
+            variant="outline"
+            className="w-full"
+            disabled={request.requestStatus === "Fulfilled"}
+          >
+            {request.requestStatus === "Fulfilled"
+              ? "Fulfilled"
+              : "Mark as Fulfilled"}
           </Button>
         ) : (
           <>
             {isAccepted ? (
-              <Button variant="outline" className="w-full" onClick={handleShowContact}>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleShowContact}
+              >
                 View Contact Info
               </Button>
             ) : (
-              <Button className="w-full bg-red-700 hover:bg-red-800" onClick={handleAccept} disabled={isAccepting}>
+              <Button
+                className="w-full bg-red-700 hover:bg-red-800"
+                onClick={handleAccept}
+                disabled={isAccepting}
+              >
                 {isAccepting ? "Accepting..." : "Accept Request"}
               </Button>
             )}
@@ -134,5 +149,5 @@ export function RequestCard({ request, isOwner }: RequestCardProps) {
         )}
       </CardFooter>
     </Card>
-  )
+  );
 }

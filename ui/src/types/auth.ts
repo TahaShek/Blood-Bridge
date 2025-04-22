@@ -1,4 +1,3 @@
-import { strict } from "assert";
 
 export type LoginCredentials = {
   email: string;

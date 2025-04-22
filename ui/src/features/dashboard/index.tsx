@@ -117,7 +117,7 @@ export function DashboardOverview() {
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <h2 className="text-2xl font-bold">Quick Actions</h2>
-        <Link to="/dashboard/requests/new">
+        <Link to="/requests/new">
           <Button className="bg-red-700 hover:bg-red-800">
             + Request Blood
           </Button>

@@ -2,7 +2,7 @@ import { LoginCredentials, RegisterCredentials } from "@/types";
 import apiClient from "./apiClient";
 
 export const loginUser = async (credentials: LoginCredentials) => {
-  const response = await apiClient.post("auth/login", credentials);
+  const response = await apiClient.post("auth/sign-in", credentials);
   return response;
 };
 

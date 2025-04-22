@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import {
   AuthFormSchema,
@@ -15,6 +16,7 @@ import useAuth from "@/hooks/useAuth";
 
 export function LoginForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const {
     register,
@@ -29,20 +31,21 @@ export function LoginForm() {
   const auth = useAuth();
   const onSubmit = async (data: AuthFormSchema) => {
     auth.login(data);
-    setIsSubmitting(true);
+    navigate("/dashboard");
+    // setIsSubmitting(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      console.log(data);
+    // // Simulate API call
+    // setTimeout(() => {
+    //   console.log(data);
 
-      toast({
-        title: "Login successful!",
-        description: "You are now logged in.",
-      });
-      setIsSubmitting(false);
-      // Redirect to dashboard in a real app
-      window.location.href = "/dashboard";
-    }, 1500);
+    //   toast({
+    //     title: "Login successful!",
+    //     description: "You are now logged in.",
+    //   });
+    //   setIsSubmitting(false);
+    //   // Redirect to dashboard in a real app
+    //   window.location.href = "/dashboard";
+    // }, 1500);
   };
 
   return (

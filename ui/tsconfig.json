@@ -12,6 +12,8 @@
     "baseUrl": ".",
     "jsx": "react-jsx",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "allowSyntheticDefaultImports": true
+
   }
 }
