@@ -1,9 +1,16 @@
 import { admin } from "../../firebase/firebase-admin.js";
 import { User } from "../../models/user.model.js"
 
-const sendBloodRequestNotification = async ({ bloodGroup, city, requesterName, title = "Blood Donation Request", urgencyLevel }) => {
+const sendBloodRequestNotification = async ({ bloodGroup, city, requestorName, requestorId, title = "Blood Donation Request", urgencyLevel }) => {
     try {
-        const users = await User.find({ bloodGroup, "address.city": city,  });
+        const users = await User.find({
+            _id: { $ne: requestorId },
+            $or: [
+                { bloodGroup: bloodGroup },
+                { bloodGroup: "Any" }
+            ], "address.city": city,
+        });
+
         const tokens = users.map((u) => u.fcmToken).filter(Boolean);
 
         if (!tokens.length) {
@@ -18,7 +25,7 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requesterName, t
         const message = {
             notification: {
                 title: title,
-                body: `${requesterName} needs ${bloodGroup} near ${city}`,
+                body: `${requestorName} needs ${bloodGroup} near ${city} - urgency: ${urgencyLevel}`,
             },
             tokens: uniqueTokens,
         };
@@ -28,7 +35,7 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requesterName, t
 
         return {
             status: 200,
-            message: "Notifications Sent"
+            message: `Notifications Sent to ${tokens.length} users`
         };
 
     } catch (error) {

@@ -7,7 +7,8 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { incrementRequestStats } from "../../features/user/analytics.feature.js";
 import { incrementTotalBloodRequestsStats } from "../../features/admin/adminAnalytics.feature.js";
 import { sendBloodRequestNotification } from "../../features/notifications/fcm.feature.js";
-import { filters } from "../../constants/constants.js";
+import { requestFilters } from "../../constants/constants.js";
+import { buildFilters, paginateQuery } from "../../utils/databaseHelpers.js";
 
 const createBloodRequest = asyncHandler(async (req, res) => {
     const { user } = req;
@@ -21,67 +22,64 @@ const createBloodRequest = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while creating request");
     }
 
-    const response = await sendBloodRequestNotification({ ...req.body, requesterName: user.name })
+    const notificationStat = await sendBloodRequestNotification({ ...req.body, requestorName: user.name, requestorId: user._id })
 
-    if(response?.status !== 200) {
-        throw new ApiError(response.status, response.message);
-    }
-    
+    const notificationStatus = notificationStat;
+
+    // TODO: to with automation instead of manual
     await incrementRequestStats(user._id);
-    
+
     await incrementTotalBloodRequestsStats();
 
     return res.status(201).json(
         new ApiResponse(
             201,
-            { bloodRequest },
+            { bloodRequest, notificationStatus },
             "Request Created Successfully"
         )
     );
 });
 
 const getAllUserBloodRequests = asyncHandler(async (req, res) => {
-    const {user} = req;
-    
-    const query = { requestor: user._id };
+    const { user } = req;
 
-    filters.forEach((key) => {
-        if(req.query[key]) {
-            if(key === "hospital") {
-                query[key] = { $regex: req.query[key], $options: "i" };
-            } else {
-                query[key] = req.query[key];
-            }
-        }
-    })
+    const query = {
+        requestor: user._id,
+        ...buildFilters(req.query, requestFilters)
+    }
 
-    const bloodRequests = await BloodRequest.find(query);
+    console.log(query)
 
-    if(bloodRequests.length === 0) {
-        throw new ApiError(404, "No requests found against user");
+    const { results, ...pagination } = await paginateQuery(BloodRequest, query, req.query);
+
+    if (results.length === 0) {
+        throw new ApiError(404, `No requests found against user - ${user.name}`);
     }
 
     return res.status(200).json(
         new ApiResponse(
             200,
-            { bloodRequests },
-            `Requests Fetched Successfully -${user.name}`
+            {
+                bloodRequests: results,
+                pagination: pagination,
+            },
+            `Requests Fetched Successfully - ${user.name}`
         )
     )
 });
 
 const getUserBloodRequest = asyncHandler(async (req, res) => {
-    const {user} = req;
+    const { user } = req;
 
-    const {id} = req.params;
+    const { id } = req.params;
 
-    if(!mongoose.isValidObjectId(id)) {
+    if (!mongoose.isValidObjectId(id)) {
         throw new ApiError(400, "Invalid request id");
     }
 
-    const bloodRequest = await BloodRequest.findOne({_id: id, requestor: user._id});
+    const bloodRequest = await BloodRequest.findOne({ _id: id, requestor: user._id });
 
-    if(!bloodRequest) {
+    if (!bloodRequest) {
         throw new ApiError(404, `No request found against id: ${id}`);
     }
 
@@ -94,4 +92,25 @@ const getUserBloodRequest = asyncHandler(async (req, res) => {
     );
 });
 
-export { createBloodRequest, getAllUserBloodRequests, getUserBloodRequest };
+const getAllAvailableBloodRequests = asyncHandler(async (req, res) => {
+    const { user } = req;
+    if (!user.isDonating) {
+        throw new ApiError(401, "access denied -only donators allowed");
+    }
+
+    const query = {
+        ...buildFilters(req.query, requestFilters)
+    }
+
+    const { results: bloodRequests, ...pagination  } = await paginateQuery(BloodRequest, query, req.query);
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { bloodRequests, pagination },
+            "Blood Requests fetched successfully"
+        )
+    );
+});
+
+export { createBloodRequest, getAllUserBloodRequests, getUserBloodRequest, getAllAvailableBloodRequests };

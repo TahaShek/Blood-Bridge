@@ -107,12 +107,19 @@ const signUp = asyncHandler(async (req, res) => {
 });
 
 const signIn = asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const { phoneNumber, email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    const orQuery = [];
+    if (email) orQuery.push({ email });
+    if (phoneNumber) orQuery.push({ phoneNumber });
+
+    const user = await User.findOne({
+        $or: orQuery
+    });
 
     if (!user) {
-        throw new ApiError(404, "no records found against this email");
+        const identityUsed = email ? "email" : "phoneNumber";
+        throw new ApiError(404, `no records found against this ${identityUsed}`);
     }
 
     const doesPasswordMatch = await user.isPasswordCorrect(password);
@@ -140,7 +147,7 @@ const signIn = asyncHandler(async (req, res) => {
                     accessToken,
                     refreshToken,
                 },
-                "user logged in successfully"
+                `User Signed in Successfully - ${updatedUser.name}`
             )
         );
 });

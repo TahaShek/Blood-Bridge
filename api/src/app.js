@@ -25,9 +25,11 @@ app.use("/api/v1/auth", authRoutes);
 /* /auth routes */
 
 /* user routes */
+import userRoutes from "./routes/user/user.routes.js"
 import bloodRequestRoutes from "./routes/user/bloodRequest.routes.js"
 import userRecordRoutes from "./routes/user/record.routes.js"
 
+app.use("/api/v1/user/", userRoutes);
 app.use("/api/v1/user/request", bloodRequestRoutes);
 app.use("/api/v1/user/record", userRecordRoutes);
 /* /user routes */
