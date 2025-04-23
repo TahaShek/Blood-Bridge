@@ -30,48 +30,53 @@ export function LoginForm() {
 
   const auth = useAuth();
   const onSubmit = async (data: AuthFormSchema) => {
-    auth.login(data);
-    navigate("/dashboard");
-    // setIsSubmitting(true);
+    setIsSubmitting(true);
 
-    // // Simulate API call
-    // setTimeout(() => {
-    //   console.log(data);
+    try {
+      await auth.login(data);
+      // On successful login
+      navigate("/dashboard");
+      toast({
+        title: "Login Successful",
+        description: "You have been logged in successfully",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error(error.message);
 
-    //   toast({
-    //     title: "Login successful!",
-    //     description: "You are now logged in.",
-    //   });
-    //   setIsSubmitting(false);
-    //   // Redirect to dashboard in a real app
-    //   window.location.href = "/dashboard";
-    // }, 1500);
+      // Show error in toast
+      toast({
+        title: "Login Failed",
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-red-700">Welcome Back</h1>
+        <h1 className="text-3xl font-bold text-red-700 ">Welcome Back</h1>
         <p className="text-gray-500">Login to your account</p>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label
-            htmlFor="email"
+            htmlFor="phoneNumber"
             className="block text-sm font-medium text-gray-700"
           >
             Email
           </label>
           <Input
-            id="email"
-            placeholder="john@example.com"
-            type="email"
-            {...register("email")}
+            id="phoneNumber"
+            placeholder=""
+            type="text"
+            {...register("phoneNumber")}
             className="mt-1 block w-full"
           />
-          {errors.email && (
-            <p className="text-sm text-red-600">{errors.email.message}</p>
-          )}
         </div>
 
         <div>

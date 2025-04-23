@@ -5,7 +5,6 @@ import { MainNav } from "@/components/main-nav";
 import { Features } from "@/components/features";
 import { HowItWorks } from "@/components/how-it-works";
 import { Testimonials } from "@/components/testimonials";
-import { Footer } from "@/components/footer";
 
 export default function Home() {
   return (
@@ -15,10 +14,12 @@ export default function Home() {
           <MainNav />
           <div className="ml-auto flex items-center space-x-4">
             <Link to="/login">
-              <Button variant="outline">Login</Button>
+              <Button variant="outline">Become a Donor</Button>
             </Link>
             <Link to="/register">
-              <Button className="bg-red-700 hover:bg-red-800">Register</Button>
+              <Button className="bg-red-700 hover:bg-red-800">
+                Request for Blood
+              </Button>
             </Link>
           </div>
         </div>
@@ -29,7 +30,6 @@ export default function Home() {
         <HowItWorks />
         <Testimonials />
       </main>
-      <Footer />
     </div>
   );
 }

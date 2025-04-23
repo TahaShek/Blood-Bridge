@@ -1,9 +1,7 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
-import { Link } from "react-router";
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 
 export function HowItWorks() {
   const containerVariants = {
