@@ -33,4 +33,8 @@ const paginateQuery = async (Model, query, reqQuery) => {
     }
 };
 
-export { paginateQuery, buildFilters };
+const validateEnumValues = (validValues, actualValue) => {
+  return validValues.includes(actualValue)
+};
+
+export { paginateQuery, buildFilters, validateEnumValues };

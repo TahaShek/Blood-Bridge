@@ -32,9 +32,9 @@ const incrementRequestStats = async (userId) => {
 
 const updateRequestStatusStats = async (userId, fromStatus, toStatus) => {
     const incObj = {};
-    // TODO: Pending -> Fulfilled
-    if (fromStatus) incObj[`requestStats.${fromStatus.toLowerCase()}`] = -1;
-    if (toStatus) incObj[`requestStats.${toStatus.toLowerCase()}`] = 1;
+
+    if (fromStatus) incObj[`requestStats.${fromStatus}`] = -1;
+    if (toStatus) incObj[`requestStats.${toStatus}`] = 1;
 
     await UserAnalytics.findOneAndUpdate(
         { user: userId },
@@ -44,4 +44,18 @@ const updateRequestStatusStats = async (userId, fromStatus, toStatus) => {
     );
 };
 
-export { ensureUserAnalytics, incrementRequestStats, updateRequestStatusStats, createUserRecord };
+const incrementDonationStats = async (userId, isSuccessful) => {
+    const analytics = await ensureUserAnalytics(userId);
+
+    analytics.donationStats.total += 1;
+    if(isSuccessful) {
+        analytics.donationStats.successful += 1;
+        analytics.lastDonationAt = Date.now();
+    }
+
+    await analytics.save();
+
+    return analytics.donationStats.total;
+}
+
+export { ensureUserAnalytics, incrementRequestStats, updateRequestStatusStats, createUserRecord, incrementDonationStats };

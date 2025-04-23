@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { bloodGroups, requestStatuses, urgencyLevels } from "../constants/constants.js";
+import { bloodGroups, bloodRequestExpiry, requestStatuses, urgencyLevels } from "../constants/constants.js";
 
 const bloodRequestSchema = new mongoose.Schema({
     requestor: {
@@ -20,6 +20,10 @@ const bloodRequestSchema = new mongoose.Schema({
         type: Number,
         required: [true, "Number of donors is required"],
     },
+    donors: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+    }],
     city: {
         type: String,
         required: [true, "City is required"],
@@ -45,8 +49,14 @@ const bloodRequestSchema = new mongoose.Schema({
     message: {
         type: String,
         default: "",
+    },
+    expirationDate: {
+        type: Date,
+        default: () => new Date(bloodRequestExpiry),
     }
 
 }, { timestamps: true });
+
+bloodRequestSchema.index({ expirationDate: 1 }, { expireAfterSeconds: 0 });
 
 export const BloodRequest = mongoose.model("BloodRequests", bloodRequestSchema);
