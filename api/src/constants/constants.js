@@ -21,6 +21,12 @@ export const userFilters = {
     bloodGroup: { regex: false },
 };
 
+export const bloodRequestExpiry = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30d 
+// const humanReadableDate = new Date(bloodRequest.expirationDate).toLocaleDateString('en-US', {
+//     year: 'numeric',
+//     month: 'long',
+//     day: 'numeric'
+//   });
 
 export const MaxAgeOfAccessToken = process.env.ACCESS_TOKEN_EXPIRY || 86400000; // 1d
 export const MaxAgeOfRefreshToken = process.env.REFRESH_TOKEN_EXPIRY || 7 * 24 * 60 * 60 * 1000; // 7d

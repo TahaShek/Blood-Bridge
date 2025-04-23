@@ -4,11 +4,11 @@ import { BloodRequest } from "../../models/bloodRequest.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { incrementRequestStats } from "../../features/user/analytics.feature.js";
+import { incrementDonationStats, incrementRequestStats, updateRequestStatusStats } from "../../features/user/analytics.feature.js";
 import { incrementTotalBloodRequestsStats } from "../../features/admin/adminAnalytics.feature.js";
 import { sendBloodRequestNotification } from "../../features/notifications/fcm.feature.js";
-import { requestFilters } from "../../constants/constants.js";
-import { buildFilters, paginateQuery } from "../../utils/databaseHelpers.js";
+import { requestFilters, requestStatuses } from "../../constants/constants.js";
+import { buildFilters, paginateQuery, validateEnumValues } from "../../utils/databaseHelpers.js";
 
 const createBloodRequest = asyncHandler(async (req, res) => {
     const { user } = req;
@@ -102,7 +102,7 @@ const getAllAvailableBloodRequests = asyncHandler(async (req, res) => {
         ...buildFilters(req.query, requestFilters)
     }
 
-    const { results: bloodRequests, ...pagination  } = await paginateQuery(BloodRequest, query, req.query);
+    const { results: bloodRequests, ...pagination } = await paginateQuery(BloodRequest, query, req.query);
 
     return res.status(200).json(
         new ApiResponse(
@@ -113,4 +113,88 @@ const getAllAvailableBloodRequests = asyncHandler(async (req, res) => {
     );
 });
 
-export { createBloodRequest, getAllUserBloodRequests, getUserBloodRequest, getAllAvailableBloodRequests };
+const concludeBloodRequest = asyncHandler(async (req, res) => {
+    const { user } = req;
+    const { id } = req.params;
+    const { action } = req.body;
+
+    if (!mongoose.isValidObjectId(id)) {
+        throw new ApiError(400, "Invalid request id");
+    }
+
+    const bloodRequest = await BloodRequest.findById(id);
+
+    if (!bloodRequest || bloodRequest.requestor.toString() !== user._id) {
+        throw new ApiError(404, "Either Blood Request does not exist/expired or requesting user is not the creater of it");
+    }
+
+    if(bloodRequest.requestStatus !== "Pending") {
+        throw new ApiError(400, "This request is not in pending status");
+    }
+
+    if (!validateEnumValues(requestStatuses, action)) {
+        throw new ApiError(400, `Invalid action field - valid values are : ${requestStatuses.join(", ")}`)
+    }
+
+    const prevStatus = bloodRequest.requestStatus;
+
+    bloodRequest.requestStatus = action;
+    // add jobs to start the timer of donors as well
+    await bloodRequest.save();
+
+    await updateRequestStatusStats(user._id, prevStatus, action);
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { bloodRequest },
+            `Blood Request concluded successfully - Status: ${action}`
+        )
+    )
+});
+
+const addDonorInBloodRequest = asyncHandler(async (req, res) => {
+    const {user} = req;
+    const {id} = req.params;
+
+    if(!user.isDonating) {
+        throw new ApiError(401, `User donating status is set to false - ${user.name}, Donating Status: ${user.isDonating}`);
+    }
+
+    const bloodRequest = await BloodRequest.findByIdAndUpdate(id);
+
+    if(!bloodRequest) {
+        throw new ApiError(404, "Blood request not found");
+    }
+
+    const alreadyDonated = bloodRequest.donors.some(donor => donor.equals(user._id));
+
+    if(alreadyDonated) {
+        throw new ApiError(400, "You are already added as a donor to this request");
+    }
+
+    if(bloodRequest.donors.length >= bloodRequest.numberOfDonors) {
+        throw new ApiError(400, "This request already has the required number of donors");
+    }
+
+    bloodRequest.donors.push(user._id);
+
+    if(bloodRequest.donors.length === bloodRequest.numberOfDonors) {
+        bloodRequest.requestStatus = "Fulfilled";
+    }
+
+    await bloodRequest.save();
+
+    const totalDonationsByUser = await incrementDonationStats(user._id, bloodRequest.requestStatus === "Fulfilled");
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { bloodRequest },
+            `Donor successfully added - ${user.name}, totalDonations: ${totalDonationsByUser}`
+        )
+    )
+
+});
+
+export { createBloodRequest, getAllUserBloodRequests, getUserBloodRequest, getAllAvailableBloodRequests, concludeBloodRequest, addDonorInBloodRequest };
