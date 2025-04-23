@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
-
-import { Link } from "react-router";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -13,78 +12,89 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-
 import { toast } from "@/components/ui/use-toast";
 import { RequestCard } from "@/components/ui/request-card";
-
-// Mock data
-const myRequests = [
-  {
-    id: "1",
-    bloodType: "A+",
-    donorsNeeded: 2,
-    city: "Lahore",
-    urgency: "High",
-    message: "Needed for surgery tomorrow morning",
-    createdAt: "2023-04-18T10:00:00Z",
-    status: "pending",
-    acceptedDonors: [],
-  },
-  {
-    id: "2",
-    bloodType: "O-",
-    donorsNeeded: 1,
-    city: "Lahore",
-    urgency: "Medium",
-    message: "Regular donation needed",
-    createdAt: "2023-04-17T14:30:00Z",
-    status: "pending",
-    acceptedDonors: [],
-  },
-];
-
-const incomingRequests = [
-  {
-    id: "3",
-    bloodType: "B+",
-    donorsNeeded: 3,
-    city: "Lahore",
-    urgency: "High",
-    message: "Emergency case, accident victim",
-    createdAt: "2023-04-16T09:15:00Z",
-    status: "pending",
-    acceptedDonors: [],
-    requesterName: "Ali Ahmed",
-    requesterContact: "+923001234567",
-  },
-  {
-    id: "4",
-    bloodType: "AB+",
-    donorsNeeded: 1,
-    city: "Lahore",
-    urgency: "Low",
-    message: "Scheduled transfusion next week",
-    createdAt: "2023-04-15T16:45:00Z",
-    status: "pending",
-    acceptedDonors: [],
-    requesterName: "Sara Khan",
-    requesterContact: "+923007654321",
-  },
-];
+import { toggleDonationStatus } from "@/services/authApi";
+import useAuth from "@/hooks/useAuth";
+import { useBloodRequests } from "@/providers/BloodRequestProvider";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function DashboardOverview() {
-  const [willingToDonate, setWillingToDonate] = useState(false);
+  const { user } = useAuth();
+  const { bloodRequests, loading, error, refreshRequests } = useBloodRequests();
+  const [willingToDonate, setWillingToDonate] = useState(
+    user?.isDonating || false
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterBloodType, setFilterBloodType] = useState("all");
+  const [filterUrgency, setFilterUrgency] = useState("all");
 
-  const handleToggleChange = (checked: boolean) => {
-    setWillingToDonate(checked);
-    toast({
-      title: checked
-        ? "Donation status activated"
-        : "Donation status deactivated",
-      description: checked
-        ? "You will now receive blood donation requests."
-        : "You will no longer receive blood donation requests.",
+  // Filter requests based on search and filters
+  const filterRequests = (requests: any[]) => {
+    return requests.filter((request) => {
+      const matchesSearch =
+        request.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (request.message &&
+          request.message.toLowerCase().includes(searchTerm.toLowerCase()));
+
+      const matchesBloodType =
+        filterBloodType === "all" || request.bloodType === filterBloodType;
+      const matchesUrgency =
+        filterUrgency === "all" || request.urgency === filterUrgency;
+
+      return matchesSearch && matchesBloodType && matchesUrgency;
     });
+  };
+
+  const filteredMyRequests = filterRequests(bloodRequests);
+  const filteredIncomingRequests = willingToDonate
+    ? filterRequests(bloodRequests.filter((req) => !req.isOwner))
+    : [];
+
+  // Sync local state with user data when it changes
+  useEffect(() => {
+    if (user) {
+      console.log(user.isDonating, "is donating");
+      setWillingToDonate(user.isDonating);
+    }
+  }, [user]);
+
+  const handleToggleChange = async (checked: boolean) => {
+    setIsLoading(true);
+    try {
+      // Call API to toggle status and get updated user
+      const updatedUser = await toggleDonationStatus();
+
+      // Update local state with the response
+      setWillingToDonate(updatedUser.isDonating);
+
+      toast({
+        title: updatedUser.isDonating
+          ? "Donation status activated"
+          : "Donation status deactivated",
+        description: updatedUser.isDonating
+          ? "You will now receive blood donation requests."
+          : "You will no longer receive blood donation requests.",
+      });
+    } catch (error) {
+      // Revert on error
+      setWillingToDonate(!checked);
+      toast({
+        title: "Error",
+        description: "Failed to update donation status. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -102,6 +112,7 @@ export function DashboardOverview() {
               id="donation-toggle"
               checked={willingToDonate}
               onCheckedChange={handleToggleChange}
+              disabled={isLoading}
             />
             <Label htmlFor="donation-toggle" className="font-medium">
               I&apos;m willing to donate
@@ -125,15 +136,36 @@ export function DashboardOverview() {
       </div>
 
       <div className="space-y-6">
+        {/* My Blood Requests Section */}
         <div>
           <h2 className="text-2xl font-bold mb-4">My Blood Requests</h2>
-          {myRequests.length > 0 ? (
+          {loading ? (
+            <Card>
+              <CardContent className="py-6">
+                <p className="text-center text-muted-foreground">
+                  Loading your requests...
+                </p>
+              </CardContent>
+            </Card>
+          ) : error ? (
+            <Card>
+              <CardContent className="py-6">
+                <p className="text-center text-red-500">{error}</p>
+                <div className="flex justify-center mt-4">
+                  <Button onClick={refreshRequests} variant="outline">
+                    Retry
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : filteredMyRequests.length > 0 ? (
             <div className="grid gap-4 md:grid-cols-2">
-              {myRequests.map((request) => (
+              {filteredMyRequests.map((request) => (
                 <RequestCard
                   key={request.id}
                   request={request}
                   isOwner={true}
+                  onRefresh={refreshRequests}
                 />
               ))}
             </div>
@@ -141,25 +173,70 @@ export function DashboardOverview() {
             <Card>
               <CardContent className="py-6">
                 <p className="text-center text-muted-foreground">
-                  You haven&apos;t made any blood requests yet.
+                  {searchTerm ||
+                  filterBloodType !== "all" ||
+                  filterUrgency !== "all"
+                    ? "No requests found matching your filters."
+                    : "You haven't made any blood requests yet."}
                 </p>
               </CardContent>
             </Card>
           )}
         </div>
 
+        {/* Incoming Requests Section (only shown if willing to donate) */}
         {willingToDonate && (
           <div>
-            <h2 className="text-2xl font-bold mb-4">
-              Incoming Requests For You
-            </h2>
-            {incomingRequests.length > 0 ? (
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Incoming Requests For You</h2>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Search requests"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-40"
+                />
+                <Select
+                  value={filterBloodType}
+                  onValueChange={setFilterBloodType}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Blood Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Types</SelectItem>
+                    <SelectItem value="A+">A+</SelectItem>
+                    <SelectItem value="A-">A-</SelectItem>
+                    <SelectItem value="B+">B+</SelectItem>
+                    <SelectItem value="B-">B-</SelectItem>
+                    <SelectItem value="AB+">AB+</SelectItem>
+                    <SelectItem value="AB-">AB-</SelectItem>
+                    <SelectItem value="O+">O+</SelectItem>
+                    <SelectItem value="O-">O-</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterUrgency} onValueChange={setFilterUrgency}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue placeholder="Urgency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="Low">Low</SelectItem>
+                    <SelectItem value="Medium">Medium</SelectItem>
+                    <SelectItem value="High">High</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {filteredIncomingRequests.length > 0 ? (
               <div className="grid gap-4 md:grid-cols-2">
-                {incomingRequests.map((request) => (
+                {filteredIncomingRequests.map((request) => (
                   <RequestCard
                     key={request.id}
                     request={request}
                     isOwner={false}
+                    onRefresh={refreshRequests}
                   />
                 ))}
               </div>
@@ -167,8 +244,11 @@ export function DashboardOverview() {
               <Card>
                 <CardContent className="py-6">
                   <p className="text-center text-muted-foreground">
-                    No incoming blood requests matching your blood type and
-                    city.
+                    {searchTerm ||
+                    filterBloodType !== "all" ||
+                    filterUrgency !== "all"
+                      ? "No incoming requests match your filters."
+                      : "No incoming blood requests matching your blood type and city."}
                   </p>
                 </CardContent>
               </Card>

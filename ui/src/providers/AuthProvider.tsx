@@ -1,56 +1,74 @@
 import { createContext, useEffect, useState, useCallback } from "react";
-// import * as Cookies from "js-cookie";
-import { loginUser, registerUser } from "@/services/authApi";
 import Cookies from "js-cookie";
-import { LoginCredentials, RegisterCredentials, } from "@/types";
+import { loginUser, registerUser, me } from "@/services/authApi";
+import { LoginCredentials, RegisterCredentials, User } from "@/types";
 
 type AuthContextType = {
-  user: any | null;
+  user: User | null;
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   error: string | null;
+  fetchUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Initialize auth state from storage (e.g., cookies/token)
+  const fetchUser = useCallback(async () => {
+    try {
+      const accessToken = Cookies.get("accessToken1");
+      if (!accessToken) return;
+
+      setIsLoading(true);
+      const userData = await me();
+      setUser(userData);
+    } catch (err) {
+      console.error("Failed to fetch user", err);
+      logout();
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     const initializeAuth = async () => {
-      try {
-        const storedUser = Cookies.get("user");
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (err) {
-        console.error("Failed to parse user data", err);
-        logout();
+      const accessToken = Cookies.get("accessToken1");
+      if (accessToken) {
+        await fetchUser();
       }
     };
     initializeAuth();
-  }, []);
+  }, [fetchUser]);
 
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     setError(null);
     try {
-      const userData = await loginUser(credentials);
-      setUser(userData);
-      Cookies.set("user", JSON.stringify(userData), {
-        expires: 7,
-        secure: true,
-        sameSite: "strict",
-      });
+      const { accessToken, refreshToken } = await loginUser(credentials);
+
+      // Set cookies for tokens only
+      const cookieOptions = {
+        expires: 7, // 7 days
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict" as const,
+      };
+
+      Cookies.set("accessToken1", accessToken, cookieOptions);
+      Cookies.set("refreshToken", refreshToken, cookieOptions);
+
+      // Fetch user data after successful login
+      await fetchUser();
     } catch (err) {
+      console.log(err, "asdad");
       setError(err instanceof Error ? err.message : "Login failed");
-      throw err; // Re-throw for component-level handling
+      throw err;
     } finally {
       setIsLoading(false);
     }
@@ -60,8 +78,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true);
     try {
       await registerUser(credentials);
-      // Optionally auto-login after registration:
-      // await login(credentials);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
       throw err;
@@ -72,8 +88,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = useCallback(() => {
     setUser(null);
-    Cookies.remove("user");
-    // Redirect or cleanup (e.g., clear Apollo cache)
+    // Remove all auth cookies
+    Cookies.remove("accessToken");
+    Cookies.remove("refreshToken");
+    // Additional cleanup can go here
   }, []);
 
   const value = {
@@ -84,6 +102,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     logout,
     isLoading,
     error,
+    fetchUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

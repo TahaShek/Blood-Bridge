@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy } from "react";
 import * as React from "react";
 import Layout from "@/pages/layout";
+import { HowItWorks } from "@/features/how-it-works";
+import DonorFormPage from "@/features/blood-donor/DonorCreation";
 
 
 const HomePage = lazy(() => import("@/pages/home"));
@@ -58,6 +60,15 @@ const router = createBrowserRouter([
     path: "home",
     element: React.createElement(HomePage),
   },
+  {
+    path:"how-it-works",
+    element:React.createElement(HowItWorks)
+  }
+,
+  {
+    path:"donor-creation",
+    element:React.createElement(DonorFormPage)
+  }
 ]);
 
 export default router;

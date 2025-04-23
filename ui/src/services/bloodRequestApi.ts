@@ -1,9 +1,12 @@
 import { BloodRequest, BloodRequestList } from "@/types";
 import apiClient from "./apiClient";
 
-export const createBloodRequest = async (data: BloodRequest) => {
+export const createBloodRequest = async (values: BloodRequest) => {
   try {
-    const response = apiClient.post("user/request/create", data);
+    const response = await apiClient.post("user/request/create", values);
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
     return response;
   } catch (error) {}
 };

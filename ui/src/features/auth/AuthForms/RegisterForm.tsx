@@ -75,19 +75,6 @@ export function RegisterForm() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="john@example.com"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-sm text-red-600">{errors.email.message}</p>
-            )}
-          </div>
-          <div>
             <Label htmlFor="phoneNumber">Phone Number</Label>
             <Input
               id="phoneNumber"
