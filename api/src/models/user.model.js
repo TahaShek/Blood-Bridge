@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, "email is required"],
         trim: true,
         index: true,
         unique: true,
@@ -39,7 +38,9 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
+        index: true,
         required: [true, "Phone Number is required"],
+        unique: [true, "This phone number already exist's"],
     },
     role: {
         type: String,
@@ -61,7 +62,6 @@ userSchema.pre("save", async function (next) {
     this.password = await bcrypt.hash(this.password, 10);
     next();
 });
-
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
 };
