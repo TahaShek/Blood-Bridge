@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router";
 
 export function HowItWorks() {
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {

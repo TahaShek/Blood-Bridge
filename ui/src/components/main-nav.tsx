@@ -25,7 +25,7 @@ export function MainNav() {
         </motion.span>
       </Link>
       <nav className="hidden md:flex items-center space-x-4 lg:space-x-6">
-        <Link to="/about">
+        {/* <Link to="/about">
           <motion.span
             className={`text-sm font-medium transition-colors hover:text-red-600 ${
               isActive("/about") ? "text-red-600" : "text-gray-700"
@@ -35,7 +35,7 @@ export function MainNav() {
           >
             About
           </motion.span>
-        </Link>
+        </Link> */}
         <Link to="/how-it-works">
           <motion.span
             className={`text-sm font-medium transition-colors hover:text-red-600 ${
