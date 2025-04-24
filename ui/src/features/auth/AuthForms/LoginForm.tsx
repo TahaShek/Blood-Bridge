@@ -67,43 +67,16 @@ export function LoginForm() {
             htmlFor="phoneNumber"
             className="block text-sm font-medium text-gray-700"
           >
-            Email
+            Phone Number
           </label>
           <Input
             id="phoneNumber"
-            placeholder=""
+            placeholder="0300XXXXXXX"
             type="text"
             {...register("phoneNumber")}
             className="mt-1 block w-full"
           />
-        </div>
-
-        <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Password
-          </label>
-          <Input
-            id="password"
-            placeholder="••••••••"
-            type="password"
-            {...register("password")}
-            className="mt-1 block w-full"
-          />
-          {errors.password && (
-            <p className="text-sm text-red-600">{errors.password.message}</p>
-          )}
-        </div>
-
-        <div className="flex justify-end">
-          <Link
-            to="/forgot-password"
-            className="text-sm text-red-700 hover:underline"
-          >
-            Forgot password?
-          </Link>
+          {errors?.phoneNumber && <p className="text-red-500 mt-1">{errors?.phoneNumber?.message}</p>}
         </div>
 
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>

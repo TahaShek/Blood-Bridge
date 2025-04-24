@@ -4,8 +4,8 @@ import { ApiResponse } from "../../utils/ApiResponse.js"
 import { User } from "../../models/user.model.js";
 
 const saveToken = asyncHandler(async (req, res) => {
-    const {user} = req;
-    const {token} = req.body;
+    const { user } = req;
+    const { token } = req.body;
     if (!token) {
         throw new ApiError(400, "Token is required");
     }

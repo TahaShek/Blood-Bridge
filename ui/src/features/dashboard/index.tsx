@@ -5,7 +5,6 @@ import {
   Calendar,
   Clock,
   Droplet,
-  Heart,
   HelpCircle,
   BarChart3,
   CheckCircle,
@@ -156,7 +155,7 @@ export default function DashboardOverview() {
     {
       type: "request",
       status: data.record.requestStats.pending > 0 ? "pending" : "fulfilled",
-      date: data.record.lastRequestAt,
+      date: data.record?.lastRequestAt,
       message:
         data.record.requestStats.pending > 0
           ? "Blood request created"
@@ -165,7 +164,7 @@ export default function DashboardOverview() {
     {
       type: "account",
       status: "created",
-      date: data.record.createdAt,
+      date: data.record?.createdAt,
       message: "Account created",
     },
   ];
@@ -230,7 +229,7 @@ export default function DashboardOverview() {
                         {data.record.requestStats.total}
                       </div>
                       <p className="text-xs text-gray-500 mt-1">
-                        Since {formatDate(data.record.createdAt)}
+                        Since {formatDate(data.record?.createdAt)}
                       </p>
                     </CardContent>
                   </Card>
@@ -464,7 +463,7 @@ export default function DashboardOverview() {
                               {activity.message}
                             </p>
                             <p className="text-xs text-gray-500 mt-1">
-                              {formatDateTime(activity.date)}
+                              {activity.date ? formatDateTime(activity.date) : "No recent activities"}
                             </p>
                           </div>
                         </div>
@@ -593,7 +592,7 @@ export default function DashboardOverview() {
                     <CardFooter className="flex justify-between">
                       <div className="text-sm text-gray-500">
                         <Calendar className="h-4 w-4 inline mr-1" />
-                        Last request: {formatDate(data.record.lastRequestAt)}
+                        Last request: {data.record?.lastRequestAt ? formatDate(data.record.lastRequestAt) : "No requests yet"}
                       </div>
                       <Badge
                         variant="outline"

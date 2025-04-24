@@ -110,7 +110,7 @@
 //   );
 // }
 
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import {
   Droplet,
   Home,
@@ -132,8 +132,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
+import useAuth from "@/hooks/useAuth";
+import { motion } from "framer-motion";
 
 type SidebarLinkProps = {
   href: string;
@@ -222,13 +225,42 @@ export function AppSidebar() {
 
 // Layout component remains exactly the same
 export function AppSidebarLayout({ children }: { children: ReactNode }) {
+
+  const auth = useAuth();
+
+  const { isLoading, logout, user } = auth;
+
+  const navigation = useNavigate();
+
+  useEffect(() => {
+    if(!user) {
+      navigation("/");
+    }
+  }, [user]);
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex items-center h-16 px-4 border-b bg-white">
+          <div className="flex justify-between items-center h-16 px-4 border-b">
             <SidebarTrigger />
+            <Button
+            type="button"
+            className="bg-red-700 hover:bg-red-800 text-lg cursor-pointer"
+            onClick={() => logout()}
+          >
+            {isLoading ? (
+              <motion.span
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                logging out...
+              </motion.span>
+            ) : (
+              "Log out"
+            )}
+          </Button>
           </div>
           <main className="flex-1 overflow-auto p-4 md:p-6 bg-slate-50">
             {children}

@@ -77,7 +77,9 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const signUp = asyncHandler(async (req, res) => {
-  const { name, password, bloodGroup, address, phoneNumber , isDonating } = req.body;
+  const { name, bloodGroup, address, phoneNumber , isDonating } = req.body;
+
+  console.log("body", req.body)
 
   const doesUserExist = await User.findOne({ phoneNumber });
 
@@ -87,7 +89,6 @@ const signUp = asyncHandler(async (req, res) => {
 
   const user = await User.create({
     name,
-    password,
     bloodGroup,
     address,
     phoneNumber,
@@ -95,7 +96,7 @@ const signUp = asyncHandler(async (req, res) => {
   });
 
   const createdUser = await User.findById(user._id).select(
-    "-password -refreshToken"
+    "-refreshToken"
   );
 
   if (!createdUser) {
@@ -118,25 +119,12 @@ const signUp = asyncHandler(async (req, res) => {
 });
 
 const signIn = asyncHandler(async (req, res) => {
-  const { phoneNumber, email, password } = req.body;
+  const { phoneNumber } = req.body;
 
-  const orQuery = [];
-  if (email) orQuery.push({ email });
-  if (phoneNumber) orQuery.push({ phoneNumber });
-
-  const user = await User.findOne({
-    $or: orQuery,
-  });
+  const user = await User.findOne({ phoneNumber });
 
   if (!user) {
-    const identityUsed = email ? "email" : "phoneNumber";
-    throw new ApiError(404, `no records found against this ${identityUsed}`);
-  }
-
-  const doesPasswordMatch = await user.isPasswordCorrect(password);
-
-  if (!doesPasswordMatch) {
-    throw new ApiError(401, "invalid password");
+    throw new ApiError(404, `no records found against this phoneNumber`);
   }
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -144,7 +132,7 @@ const signIn = asyncHandler(async (req, res) => {
   );
 
   const updatedUser = await User.findById(user._id)
-    .select("-password -refreshToken")
+    .select("-refreshToken")
     .lean();
 
   if (!updatedUser) {
