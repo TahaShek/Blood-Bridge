@@ -16,13 +16,6 @@ const signUpSchema = Joi.object({
         "string.empty": "Name is required",
         "any.required": "Name is required",
     }),
-    email: Joi.string().optional().email().trim().lowercase().messages({
-        "string.email": "Email must be a valid email address",
-    }),
-    password: Joi.string().min(6).max(30).optional().messages({
-        "string.min": "Password must be at least 6 characters long",
-        "string.max": "Password can not be more than 30 characters",
-    }),
     phoneNumber: Joi.string()
     .pattern(/^[0-9]+$/)
     .min(9)
@@ -50,18 +43,12 @@ const signInSchema = Joi.object({
     .pattern(/^[0-9]+$/)
     .min(9)
     .max(15)
-    .optional()
+    .required()
     .messages({
         "string.pattern.base": "Phone Number must only contain digits",
         "string.min": "Phone Number must be at least 9 digits",
         "string.max": "Phone Number must be no more than 15 digits",
-    }),
-    email: Joi.string().email().trim().lowercase().optional().messages({
-        "string.email": "Email must be a valid email address",
-    }),
-    password: Joi.string().required().messages({
-        "string.empty": "Password is required",
-        "any.required": "Password is required",
+        "any.required": "Phone Number is required",
     }),
 });
 

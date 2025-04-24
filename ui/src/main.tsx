@@ -7,13 +7,13 @@ import router from "./routes/index.ts";
 import { AuthProvider } from "./providers/AuthProvider"; // Import the AuthProvider
 import { BloodRequestProvider } from "./providers/BloodRequestProvider.tsx";
 import { Toaster } from "@/components/ui/toaster";
-import FCMSetup from "./components/FCMsetup/index.tsx";
+import AppInitializer from "./providers/AppInitilizer.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       {" "}
-      <FCMSetup />
+      <AppInitializer />
       <BloodRequestProvider>
         <RouterProvider router={router} />
       </BloodRequestProvider>

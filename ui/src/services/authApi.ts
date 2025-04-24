@@ -68,3 +68,16 @@ export const fcmToken = async () => {
     throw new Error(message);
   }
 };
+
+export const logoutUser = async () => {
+  try {
+    const response = apiClient.post("/auth/logout");
+    return response;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "An error occurred during login";
+    throw new Error(message);
+  }
+}

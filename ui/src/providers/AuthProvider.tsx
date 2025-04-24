@@ -1,7 +1,7 @@
-import { createContext, useEffect, useState, useCallback } from "react";
-import Cookies from "js-cookie";
-import { loginUser, registerUser, me } from "@/services/authApi";
+import { createContext, useState, useCallback } from "react";
+import { loginUser, registerUser, me, logoutUser } from "@/services/authApi";
 import { LoginCredentials, RegisterCredentials, User } from "@/types";
+import { toast } from "sonner";
 
 type AuthContextType = {
   user: User | null;
@@ -23,13 +23,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchUser = useCallback(async () => {
     try {
-      const accessToken = Cookies.get("accessToken1");
-      if (!accessToken) return;
-
       setIsLoading(true);
       const userData = await me();
       setUser(userData);
-      console.log(userData, "asdsad");
+      console.log(userData, "user in auth slice");
     } catch (err) {
       console.error("Failed to fetch user", err);
       logout();
@@ -38,34 +35,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  useEffect(() => {
-    const initializeAuth = async () => {
-      const accessToken = Cookies.get("accessToken1");
-      if (accessToken) {
-        await fetchUser();
-      }
-    };
-    initializeAuth();
-  }, [fetchUser]);
-
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);
     setError(null);
     try {
-      const { accessToken, refreshToken } = await loginUser(credentials);
+      const { user, statusCode, message } = await loginUser(credentials);
 
-      // Set cookies for tokens only
-      const cookieOptions = {
-        expires: 7, // 7 days
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict" as const,
-      };
-
-      Cookies.set("accessToken1", accessToken, cookieOptions);
-      Cookies.set("refreshToken", refreshToken, cookieOptions);
-
-      // Fetch user data after successful login
-      await fetchUser();
+      if (statusCode === 200) {
+        console.log("login res user:: ", user);
+        setUser(user);
+      } else {
+        toast.message(message);
+      }
     } catch (err) {
       console.log(err, "asdad");
       setError(err instanceof Error ? err.message : "Login failed");
@@ -78,12 +59,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (credentials: RegisterCredentials) => {
     setIsLoading(true);
     try {
-      const { phoneNumber, password } = credentials;
+      const { phoneNumber } = credentials;
       const loginCreds = {
-        password,
         phoneNumber,
       };
-      await registerUser(credentials);
+      const { statusCode, message } = await registerUser(credentials);
+      if(statusCode === 201) {
+        toast.success("Account created successfully");
+      } else {
+        toast.error(message)
+      }
       await login(loginCreds);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
@@ -93,11 +78,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    setIsLoading(true);
+    await logoutUser();
     setUser(null);
-    // Remove all auth cookies
-    Cookies.remove("accessToken");
-    Cookies.remove("refreshToken");
+    setIsLoading(false);
     // Additional cleanup can go here
   }, []);
 

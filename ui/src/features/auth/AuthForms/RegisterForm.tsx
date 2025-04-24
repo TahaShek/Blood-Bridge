@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,6 +20,7 @@ import {
 } from "./schemas/registerSchema";
 import useAuth from "@/hooks/useAuth";
 import { fadeIn, staggerContainer } from "@/lib/motion";
+import { useEffect } from "react";
 
 export function RegisterForm() {
   const {
@@ -35,16 +36,19 @@ export function RegisterForm() {
 
   const auth = useAuth();
 
+  const navigation = useNavigate();
+
+  useEffect(() => {
+    if(auth?.user) {
+      navigation("/dashboard");
+    }
+  }, [auth?.user]);
+
   const onSubmit = async (data: RegistrationForm) => {
     try {
-      delete data.confirmPassword;
-      delete data.city;
-      auth.register(data);
-      await new Promise((res) => setTimeout(res, 1000));
-      toast({
-        title: "Success",
-        description: "Account created successfully",
-      });
+      const { city, ...rest } = data;
+      const formattedData = { ...rest, address: { city } };
+      auth.register(formattedData);
     } catch (err) {
       toast({
         title: "Error",
@@ -168,7 +172,7 @@ export function RegisterForm() {
         </motion.div>
 
         {/* Account Security Section */}
-        <motion.div
+        {/* <motion.div
           variants={fadeIn("right", "spring", 0.6, 0.75)}
           className="space-y-4"
         >
@@ -211,7 +215,7 @@ export function RegisterForm() {
               </motion.p>
             )}
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Submit Button */}
         <motion.div
@@ -221,7 +225,7 @@ export function RegisterForm() {
         >
           <Button
             type="submit"
-            className="w-full bg-red-700 hover:bg-red-800 h-12 text-lg"
+            className="w-full bg-red-700 hover:bg-red-800 h-12 text-lg cursor-pointer"
             disabled={isSubmitting}
           >
             {isSubmitting ? (

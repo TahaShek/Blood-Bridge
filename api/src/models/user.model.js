@@ -10,17 +10,10 @@ const userSchema = new mongoose.Schema(
       required: [true, "Name is required"],
       trim: true,
     },
-    // email: {
-    //     type: String,
-    //     trim: true,
-    //     index: true,
-    //     unique: true,
-    //     lowercase: true
+    // password: {
+    //   type: String,
+    //   required: [false, "password is required"],
     // },
-    password: {
-      type: String,
-      required: [false, "password is required"],
-    },
     bloodGroup: {
       type: String,
       enum: bloodGroups,
@@ -59,15 +52,15 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+// userSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) return next();
 
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-userSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
+//   this.password = await bcrypt.hash(this.password, 10);
+//   next();
+// });
+// userSchema.methods.isPasswordCorrect = async function (password) {
+//   return await bcrypt.compare(password, this.password);
+// };
 
 userSchema.methods.generateAccessToken = async function () {
   return jwt.sign(

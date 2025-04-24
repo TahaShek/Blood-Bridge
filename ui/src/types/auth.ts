@@ -1,6 +1,5 @@
 export type LoginCredentials = {
   phoneNumber: string;
-  password: string;
 };
 
 export type RegisterCredentials = {
@@ -14,7 +13,6 @@ export type RegisterCredentials = {
     zipCode?: string;
   };
   bloodGroup: string;
-  password?: string;
   isDonating?: boolean;
 };
 
