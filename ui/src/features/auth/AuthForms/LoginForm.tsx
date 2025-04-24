@@ -41,15 +41,14 @@ export function LoginForm() {
         description: "You have been logged in successfully",
         variant: "default",
       });
-    } catch (error) {
-      console.error(error.message);
+    } catch (error: any) {
+      // console.error(error.message);
 
       // Show error in toast
       toast({
         title: "Login Failed",
-        description:
-          error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive",
+        description: error.message,
+        variant: "default",
       });
     } finally {
       setIsSubmitting(false);

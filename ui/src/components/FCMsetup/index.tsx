@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { messaging, getToken, onMessage } from "../../firebase/index.ts";
 import { baseURL, firebaseTokenPublicKey } from "../../constants/index.js";
+import { fcmToken } from "@/services/authApi.ts";
 
 const FCMSetup = () => {
   useEffect(() => {
@@ -13,15 +14,16 @@ const FCMSetup = () => {
             vapidKey: firebaseTokenPublicKey as string,
           });
           console.log("FCM Token:", token);
+          await fcmToken();
 
-          // Save token to backend
-          await fetch(`${baseURL}/user/fcm/save-token`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ token }),
-          });
+          // // Save token to backend
+          // await fetch(`${baseURL}/user/fcm/save-token`, {
+          //   method: "POST",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({ token }),
+          // });
         } else {
           console.log("Permission not granted");
         }

@@ -14,8 +14,10 @@ const index: React.FC<LayoutProps> = ({ children }) => {
         <div className="container flex h-16 items-center px-4 w-[95%] mx-auto py-2">
           <MainNav />
           <div className="ml-auto flex items-center space-x-4">
-            <Link to="/login">
-              <Button variant="outline" className="cursor-pointer">Become a Donor</Button>
+            <Link to="/donor-creation">
+              <Button variant="outline" className="cursor-pointer">
+                Become a Donor
+              </Button>
             </Link>
             <Link to="/register">
               <Button className="bg-red-700 hover:bg-red-800 cursor-pointer">

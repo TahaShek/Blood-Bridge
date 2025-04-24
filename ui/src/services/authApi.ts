@@ -27,6 +27,19 @@ export const registerUser = async (credentials: RegisterCredentials) => {
   }
 };
 
+export const donorCreation = async (credentials: RegisterCredentials) => {
+  try {
+    const response = await apiClient.post("auth/sign-up", credentials);
+    return response.data;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "An error occurred during login";
+    throw new Error(message);
+  }
+};
+
 export const toggleDonationStatus = async () => {
   const response = await apiClient.put("auth/toggle-donation-status");
   if (!response.data.success) {
@@ -41,4 +54,17 @@ export const me = async () => {
     throw new Error(response.data.message);
   }
   return response.data.user;
+};
+
+export const fcmToken = async () => {
+  try {
+    const response = apiClient.post("/user/fcm/save-token");
+    return response;
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "An error occurred during login";
+    throw new Error(message);
+  }
 };

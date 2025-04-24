@@ -6,16 +6,19 @@ import { RouterProvider } from "react-router-dom";
 import router from "./routes/index.ts";
 import { AuthProvider } from "./providers/AuthProvider"; // Import the AuthProvider
 import { BloodRequestProvider } from "./providers/BloodRequestProvider.tsx";
-
+import { Toaster } from "@/components/ui/toaster";
+import FCMSetup from "./components/FCMsetup/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <AuthProvider>
       {" "}
+      <FCMSetup />
       <BloodRequestProvider>
         <RouterProvider router={router} />
       </BloodRequestProvider>
       {/* Wrap the RouterProvider with AuthProvider */}
+      <Toaster />
     </AuthProvider>
   </StrictMode>
 );

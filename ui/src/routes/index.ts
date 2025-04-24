@@ -5,6 +5,7 @@ import Layout from "@/pages/layout";
 import PublicLayout from "../pages/layout/PublicLayout";
 import { HowItWorks } from "@/features/how-it-works";
 import DonorFormPage from "@/features/blood-donor/DonorCreation";
+import DonorListPage from "@/pages/donor-list";
 
 const HomePage = lazy(() => import("@/pages/home"));
 const DashboardPage = lazy(() => import("@/pages/dashboard"));
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
     element: React.createElement(RegisterPage),
   },
   {
+    path: "donor-creation",
+    element: React.createElement(DonorFormPage),
+  },
+  {
     path: "/",
     element: React.createElement(PublicLayout),
     children: [
@@ -37,8 +42,8 @@ const router = createBrowserRouter([
         element: React.createElement(HowItWorks),
       },
       {
-        path: "donor-creation",
-        element: React.createElement(DonorFormPage),
+        path: "donor-list",
+        element: React.createElement(DonorListPage),
       },
     ],
   },

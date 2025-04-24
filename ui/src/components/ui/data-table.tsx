@@ -25,6 +25,12 @@ interface DataTableProps<TData, TValue> {
   searchColumn?: string
   searchPlaceholder?: string
   primaryColor?: string
+  pageSize?: number;
+  onPageSizeChange?: (size: number) => void;
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -33,6 +39,13 @@ export function DataTable<TData, TValue>({
   searchColumn,
   searchPlaceholder = "Search...",
   primaryColor = "blue",
+  // isLoading,
+  pageSize,
+  totalPages,
+  onPageChange,
+  onPageSizeChange,
+  currentPage,
+
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -111,77 +124,72 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 text-sm text-slate-500">
-          <div>
-            {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-            selected.
-          </div>
-          <div>
-            Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-          </div>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Select
-            value={table.getState().pagination.pageSize.toString()}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value))
-            }}
-          >
-            <SelectTrigger className={`h-9 w-[70px] border-slate-200 focus:ring-${primaryColor}-500/20`}>
-              <SelectValue placeholder={table.getState().pagination.pageSize} />
-            </SelectTrigger>
-            <SelectContent>
-              {[5, 10, 20, 30, 40, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>
-                  {pageSize}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="flex items-center space-x-1">
-            <Button
-              variant="outline"
-              size="icon"
-              className={`h-9 w-9 border-slate-200 ${!table.getCanPreviousPage() ? "opacity-50" : ""}`}
-              onClick={() => table.firstPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronsLeft className="h-4 w-4" />
-              <span className="sr-only">Go to first page</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className={`h-9 w-9 border-slate-200 ${!table.getCanPreviousPage() ? "opacity-50" : ""}`}
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span className="sr-only">Go to previous page</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className={`h-9 w-9 border-slate-200 ${!table.getCanNextPage() ? "opacity-50" : ""}`}
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronRight className="h-4 w-4" />
-              <span className="sr-only">Go to next page</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className={`h-9 w-9 border-slate-200 ${!table.getCanNextPage() ? "opacity-50" : ""}`}
-              onClick={() => table.lastPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <ChevronsRight className="h-4 w-4" />
-              <span className="sr-only">Go to last page</span>
-            </Button>
-          </div>
-        </div>
+  <div className="flex items-center space-x-2 text-sm text-slate-500">
+    <div>{table.getFilteredRowModel().rows.length} result(s).</div>
+    {typeof currentPage === "number" && typeof totalPages === "number" && (
+      <div>
+        Page {currentPage} of {totalPages}
       </div>
+    )}
+  </div>
+  <div className="flex items-center space-x-2">
+    {onPageSizeChange && pageSize && (
+      <Select
+        value={String(pageSize)}
+        onValueChange={(val) => onPageSizeChange(Number(val))}
+      >
+        <SelectTrigger className={`h-9 w-[70px] border-slate-200 focus:ring-${primaryColor}-500/20`}>
+          <SelectValue placeholder={pageSize} />
+        </SelectTrigger>
+        <SelectContent>
+          {[5, 10, 20, 30, 50].map((size) => (
+            <SelectItem key={size} value={String(size)}>
+              {size}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    )}
+
+    {onPageChange && typeof currentPage === "number" && typeof totalPages === "number" && (
+      <div className="flex items-center space-x-1">
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={currentPage <= 1}
+          onClick={() => onPageChange(1)}
+        >
+          <ChevronsLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={currentPage <= 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={currentPage >= totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          disabled={currentPage >= totalPages}
+          onClick={() => onPageChange(totalPages)}
+        >
+          <ChevronsRight className="h-4 w-4" />
+        </Button>
+      </div>
+    )}
+  </div>
+</div>
+
     </div>
   )
 }

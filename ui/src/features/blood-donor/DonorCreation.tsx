@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { use, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -19,30 +19,13 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-
-// Define the schema
-const donorSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters" }),
-  phoneNumber: z
-    .string()
-    .min(10, { message: "Please enter a valid phone number" }),
-  city: z.string().min(2, { message: "City is required" }),
-  bloodGroup: z.string().min(1, { message: "Blood group is required" }),
-});
-
-type DonorForm = z.infer<typeof donorSchema>;
-
-const donorFormDefaultValues: Partial<DonorForm> = {
-  name: "",
-  phoneNumber: "",
-  city: "",
-  bloodGroup: "",
-};
+import { DonorForm, donorFormDefaultValues, donorSchema } from "./schema";
+import apiClient from "@/services/apiClient";
+import { donorCreation } from "@/services/authApi";
 
 export default function DonorFormPage() {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
-
   const {
     register,
     handleSubmit,
@@ -54,22 +37,45 @@ export default function DonorFormPage() {
     defaultValues: donorFormDefaultValues,
     mode: "onChange",
   });
+  useEffect(() => {
+    const subscription = watch((formValues) => {
+      console.log("📋 Current Form State:", formValues);
+    });
+
+    return () => subscription.unsubscribe(); // clean up on unmount
+  }, [watch]);
 
   const onSubmit = async (data: DonorForm) => {
     try {
       // Simulate API call
-      await new Promise((res) => setTimeout(res, 1000));
+
+      const { city, ...rest } = data;
+
+      const payload = {
+        ...rest,
+        password: "bloodbridge123",
+        isDonating: false,
+        address: {
+          city,
+          street: "",
+          state: "",
+          country: "Pakistan",
+          zipCode: "",
+        },
+      };
+
+      const response = await donorCreation(payload);
       console.log("Donor Data:", data);
       setIsSubmitted(true);
       toast({
         title: "Success",
-        description: "You've successfully registered as a donor!",
+        description: response.data.message,
       });
-    } catch (err) {
+    } catch (err: any) {
       toast({
         title: "Error",
-        description: "Something went wrong.",
-        variant: "destructive",
+        description: err.message,
+        variant: "default",
       });
     }
   };
@@ -79,16 +85,16 @@ export default function DonorFormPage() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left side - Inspirational content */}
-      <div className="bg-red-900 text-white md:w-1/2 p-8 md:p-12 lg:p-1 flex flex-col justify-center">
+      <div className="bg-red-900 text-white md:w-1/2 p-8 md:p-12 lg:p-1 flex flex-col ">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          // initial={{ opacity: 0, y: 20 }}
+          // animate={{ opacity: 1, y: 0 }}
+          // transition={{ duration: 0.8 }}
           className="max-w-lg mx-auto md:mx-0 md:ml-auto"
         >
           <Link
             to="/"
-            className="inline-flex items-center text-white/80 hover:text-white mb-12"
+            className="inline-flex  text-white/80 hover:text-white mb-12"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -108,7 +114,7 @@ export default function DonorFormPage() {
           </Link>
 
           <div className="flex items-center mb-6">
-            <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center mr-4">
+            <div className=" w-12 rounded-full bg-white/10 flex items-center justify-center mr-4">
               <Heart className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold">Blood Bridge</h1>
@@ -140,7 +146,7 @@ export default function DonorFormPage() {
             </div>
           </div>
 
-          <div className="hidden md:block">
+          {/* <div className="hidden md:block">
             <div className="relative h-48 w-48 mx-auto">
               <motion.div
                 className="absolute inset-0 flex items-center justify-center"
@@ -167,7 +173,7 @@ export default function DonorFormPage() {
                 }}
               />
             </div>
-          </div>
+          </div> */}
         </motion.div>
       </div>
 
@@ -233,11 +239,11 @@ export default function DonorFormPage() {
                     id="name"
                     placeholder="John Doe"
                     {...register("name")}
-                    className={`h-12 text-base ${
-                      errors.name
-                        ? "border-red-300 focus:ring-red-500"
-                        : "border-gray-300"
-                    }`}
+                    // className={` text-base ${
+                    //   errors.name
+                    //     ? "border-red-300 focus:ring-red-500"
+                    //     : "border-gray-300"
+                    // }`}
                   />
                   {errors.name && (
                     <p className="text-sm text-red-600 mt-1">
@@ -274,7 +280,7 @@ export default function DonorFormPage() {
                     id="phoneNumber"
                     placeholder="+923123456789"
                     {...register("phoneNumber")}
-                    className={`h-12 text-base ${
+                    className={` text-base ${
                       errors.phoneNumber
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300"
@@ -316,7 +322,7 @@ export default function DonorFormPage() {
                     id="city"
                     placeholder="Lahore"
                     {...register("city")}
-                    className={`h-12 text-base ${
+                    className={` text-base ${
                       errors.city
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300"
@@ -345,7 +351,7 @@ export default function DonorFormPage() {
                     defaultValue={watch("bloodGroup")}
                   >
                     <SelectTrigger
-                      className={`h-12 text-base ${
+                      className={` text-base ${
                         errors.bloodGroup
                           ? "border-red-300 focus:ring-red-500"
                           : "border-gray-300"
@@ -375,7 +381,7 @@ export default function DonorFormPage() {
                 >
                   <Button
                     type="submit"
-                    className="w-full bg-red-600 hover:bg-red-700 h-12 text-base"
+                    className="w-full bg-red-700 hover:bg-red-800 h-12 text-lg"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Registering..." : "Register as Donor"}

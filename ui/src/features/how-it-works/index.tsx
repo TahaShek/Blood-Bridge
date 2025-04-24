@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Link } from "react-router";
 
 export function HowItWorks() {
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -30,13 +29,7 @@ export function HowItWorks() {
   return (
     <section className="w-full py-16 md:py-24 lg:py-32 bg-gradient-to-b from-white to-red-50">
       <div className="container px-4 md:px-6 mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div className="text-center mb-16">
           <h2 className="text-3xl font-bold text-red-600 sm:text-4xl md:text-5xl mb-4">
             How Blood Bridge Works
           </h2>

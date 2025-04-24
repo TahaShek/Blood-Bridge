@@ -1,4 +1,3 @@
-
 export type LoginCredentials = {
   phoneNumber: string;
   password: string;
@@ -7,12 +6,19 @@ export type LoginCredentials = {
 export type RegisterCredentials = {
   name: string;
   phoneNumber: string;
-  city: string;
+  address: {
+    city: string;
+    street?: string;
+    state?: string;
+    country?: string;
+    zipCode?: string;
+  };
   bloodGroup: string;
-  password: string;
+  password?: string;
+  isDonating?: boolean;
 };
 
-export type Address = {
+type Address = {
   street: string;
   city: string;
   state: string;
@@ -28,7 +34,7 @@ export type User = {
   bloodGroup: string;
   isDonating: boolean;
   phoneNumber: string;
-  role: "user" | "admin"; // Expand if more roles exist
+  role: "user" | "admin";
   refreshToken: string;
   fcmToken: string;
   address: Address;

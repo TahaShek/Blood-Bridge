@@ -61,8 +61,8 @@ export function RegisterForm() {
       variants={staggerContainer(0.1, 0.2)}
       className="space-y-6 max-w-md mx-auto p-5 bg-white rounded-xl shadow-lg border border-gray-100"
     >
-      <motion.div 
-        variants={fadeIn("down", "spring", 0.2, 0.75)} 
+      <motion.div
+        variants={fadeIn("down", "spring", 0.2, 0.75)}
         className="space-y-2 text-center"
       >
         <h1 className="text-3xl font-bold text-red-700">Create an Account</h1>
@@ -73,20 +73,20 @@ export function RegisterForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Personal Information Section */}
-        <motion.div 
+        <motion.div
           variants={fadeIn("right", "spring", 0.4, 0.75)}
           className="space-y-4"
         >
           <div>
             <Label htmlFor="name">Full Name *</Label>
-            <Input 
-              id="name" 
-              placeholder="John Doe" 
-              {...register("name")} 
+            <Input
+              id="name"
+              placeholder="John Doe"
+              {...register("name")}
               className="mt-1"
             />
             {errors.name && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-sm text-red-600 mt-1"
@@ -106,7 +106,7 @@ export function RegisterForm() {
                 className="mt-1"
               />
               {errors.phoneNumber && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-sm text-red-600 mt-1"
@@ -118,14 +118,14 @@ export function RegisterForm() {
 
             <div>
               <Label htmlFor="city">City</Label>
-              <Input 
-                id="city" 
-                placeholder="Lahore" 
-                {...register("city")} 
+              <Input
+                id="city"
+                placeholder="Lahore"
+                {...register("city")}
                 className="mt-1"
               />
               {errors.city && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-sm text-red-600 mt-1"
@@ -156,7 +156,7 @@ export function RegisterForm() {
               </SelectContent>
             </Select>
             {errors.bloodGroup && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-sm text-red-600 mt-1"
@@ -168,7 +168,7 @@ export function RegisterForm() {
         </motion.div>
 
         {/* Account Security Section */}
-        <motion.div 
+        <motion.div
           variants={fadeIn("right", "spring", 0.6, 0.75)}
           className="space-y-4"
         >
@@ -182,7 +182,7 @@ export function RegisterForm() {
               className="mt-1"
             />
             {errors.password && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-sm text-red-600 mt-1"
@@ -202,7 +202,7 @@ export function RegisterForm() {
               className="mt-1"
             />
             {errors.confirmPassword && (
-              <motion.p 
+              <motion.p
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="text-sm text-red-600 mt-1"
@@ -214,9 +214,9 @@ export function RegisterForm() {
         </motion.div>
 
         {/* Submit Button */}
-        <motion.div 
+        <motion.div
           variants={fadeIn("up", "spring", 0.8, 0.75)}
-          whileHover={{ scale: 1.02 }} 
+          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
           <Button
@@ -238,14 +238,14 @@ export function RegisterForm() {
         </motion.div>
 
         {/* Login Link */}
-        <motion.div 
+        <motion.div
           variants={fadeIn("up", "spring", 1, 0.75)}
           className="text-center text-sm pt-2"
         >
           <p className="text-gray-600">
             Already have an account?{" "}
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="text-red-700 hover:underline font-medium"
             >
               <motion.span

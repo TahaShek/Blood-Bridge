@@ -5,11 +5,11 @@ import { Outlet } from "react-router-dom";
 function Layout() {
   return (
     <>
-      <AuthProvider>
-        <AppSidebarLayout>
-          <Outlet />
-        </AppSidebarLayout>
-      </AuthProvider>
+      {/* <AuthProvider> */}
+      <AppSidebarLayout>
+        <Outlet />
+      </AppSidebarLayout>
+      {/* </AuthProvider> */}
     </>
   );
 }
