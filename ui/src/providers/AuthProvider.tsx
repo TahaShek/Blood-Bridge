@@ -5,7 +5,7 @@ import { LoginCredentials, RegisterCredentials, User } from "@/types";
 
 type AuthContextType = {
   user: User | null;
-  isAuthenticated: boolean;
+  // isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsLoading(true);
       const userData = await me();
       setUser(userData);
+      console.log(userData, "asdsad");
     } catch (err) {
       console.error("Failed to fetch user", err);
       logout();
@@ -77,7 +78,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const register = async (credentials: RegisterCredentials) => {
     setIsLoading(true);
     try {
+      const { phoneNumber, password } = credentials;
+      const loginCreds = {
+        password,
+        phoneNumber,
+      };
       await registerUser(credentials);
+      await login(loginCreds);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
       throw err;
@@ -96,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const value = {
     user,
-    isAuthenticated: !!user,
+    // isAuthenticated: !!user,
     login,
     register,
     logout,

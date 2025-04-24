@@ -25,6 +25,8 @@ const router = createBrowserRouter([
     path: "register",
     element: React.createElement(RegisterPage),
   },
+
+  
   {
     path: "",
     element: React.createElement(Layout),

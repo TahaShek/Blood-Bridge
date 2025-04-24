@@ -177,16 +177,6 @@ export function AppSidebar() {
       icon: <Bell className="h-5 w-5 mr-3" />,
       label: "Notifications",
     },
-    {
-      href: "/history",
-      icon: <History className="h-5 w-5 mr-3" />,
-      label: "History",
-    },
-    {
-      href: "/dashboard/settings",
-      icon: <Settings className="h-5 w-5 mr-3" />,
-      label: "Settings",
-    },
   ];
 
   return (

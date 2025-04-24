@@ -8,11 +8,9 @@ export const bloodRequestSchema = z.object({
   hospital: z.string().min(1),
   urgencyLevel: z.enum(["Low", "Medium", "High"]).default("Medium"),
   contactNumber: z.string().regex(/^92\d{10}$/),
-  message: z.string().max(500).optional().default(""),
 });
 
 export type BloodRequest = z.infer<typeof bloodRequestSchema>;
-
 
 export const defaultBloodRequest: BloodRequest = {
   isForSelf: false,
@@ -22,8 +20,4 @@ export const defaultBloodRequest: BloodRequest = {
   hospital: "",
   urgencyLevel: "Medium",
   contactNumber: "",
-  message: "",
 };
-
-
-

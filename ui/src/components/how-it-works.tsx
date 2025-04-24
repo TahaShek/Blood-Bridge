@@ -82,11 +82,12 @@ export function HowItWorks() {
             </motion.h2>
             <ul className="space-y-4 md:space-y-6 flex-grow">
               {[
-                "Create an account and provide your blood type and location",
-                "Toggle your availability to donate when you're ready",
-                "Receive instant notifications for compatible blood requests in your area",
-                "Accept requests and connect with those in need",
-                "Track your donation history and see your life-saving impact",
+                "Create a donor profile with your blood type and location",
+                "Set your availability status to indicate when you're ready to donate",
+                "Receive instant notifications when someone needs your blood type",
+                "Accept requests that match your schedule and location",
+                "Connect directly with the requester through our secure platform",
+                "Track your donation history and see the lives you've impacted",
               ].map((item, index) => (
                 <motion.li
                   key={index}
@@ -94,10 +95,18 @@ export function HowItWorks() {
                   variants={itemVariants}
                 >
                   <CheckCircle className="flex-shrink-0 h-5 w-5 text-red-600 mt-0.5" />
-                  <span className="text-base md:text-lg">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </motion.li>
               ))}
             </ul>
+
+            <motion.div variants={itemVariants}>
+              <Link to="/donor-form">
+                <Button className="bg-red-600 hover:bg-red-700 mt-4">
+                  Become a Donor
+                </Button>
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
 
@@ -118,11 +127,12 @@ export function HowItWorks() {
             </motion.h2>
             <ul className="space-y-4 md:space-y-6 flex-grow">
               {[
-                "Create an account and submit a blood request in minutes",
-                "Specify blood type, number of donors needed, and urgency level",
-                "Our intelligent system matches your request with compatible donors in your area",
-                "Donors accept your request and contact you directly",
+                "Create a request specifying blood type, quantity needed, and urgency level",
+                "Our system immediately notifies compatible donors in your area",
                 "Track the status of your request in real-time through our dashboard",
+                "Communicate directly with donors who accept your request",
+                "Schedule donation appointments through our platform",
+                "Express gratitude and share your story with donors",
               ].map((item, index) => (
                 <motion.li
                   key={index}
@@ -130,11 +140,20 @@ export function HowItWorks() {
                   variants={itemVariants}
                 >
                   <CheckCircle className="flex-shrink-0 h-5 w-5 text-red-600 mt-0.5" />
-                  <span className="text-base md:text-lg">{item}</span>
+                  <span className="text-gray-700">{item}</span>
                 </motion.li>
               ))}
             </ul>
+
+            <motion.div variants={itemVariants}>
+              <Link to="/request-blood">
+                <Button className="bg-red-600 hover:bg-red-700 mt-4">
+                  Request Blood
+                </Button>
+              </Link>
+            </motion.div>
           </motion.div>
+
           <motion.div
             className="order-1 lg:order-2 h-full flex flex-col"
             initial={{ opacity: 0, x: 50 }}
@@ -148,7 +167,7 @@ export function HowItWorks() {
                 src="/placeholder.svg?height=400&width=600"
                 width={600}
                 height={400}
-                alt="Blood request"
+                alt="Blood recipient"
                 className="w-full h-auto aspect-video object-cover"
               />
             </div>
@@ -223,29 +242,23 @@ export function HowItWorks() {
               Ready to Save Lives?
             </h2>
             <p className="text-gray-600 text-lg md:text-xl">
-              Join Blood Bridge today and be part of our life-saving community.
+              Every donation can save up to three lives. By becoming a blood
+              donor, you join a community of heroes who make a real difference
+              in emergency situations.
             </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link to="/register">
+            <p className="text-gray-600 text-lg md:text-xl">
+              Our platform makes it easy to connect with those in need, receive
+              notifications when your blood type is needed, and track the impact
+              of your donations.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 mt-8">
+              <Link to="/donor-form">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
                   <Button className="bg-red-600 hover:bg-red-700 px-8 py-6 text-lg">
-                    Register Now
-                  </Button>
-                </motion.div>
-              </Link>
-              <Link to="/login">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    variant="outline"
-                    className="px-8 py-6 text-lg border-red-600 text-red-600 hover:bg-red-50"
-                  >
-                    Login
+                    Become a Donor Today
                   </Button>
                 </motion.div>
               </Link>
