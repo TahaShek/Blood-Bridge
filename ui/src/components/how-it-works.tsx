@@ -59,11 +59,12 @@ export function HowItWorks() {
             <div className="relative rounded-xl overflow-hidden shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-transparent z-10"></div>
               <img
-                src="/placeholder.svg?height=400&width=600"
+                // src="/placeholder.svg?height=400&width=600"
+                src="/how-it-works.jpg"
                 width={600}
                 height={400}
                 alt="Blood donor"
-                className="w-full h-auto aspect-video object-cover"
+                className="w-full h-auto aspect-video object-contain p-2"
               />
             </div>
           </motion.div>
@@ -164,7 +165,7 @@ export function HowItWorks() {
             <div className="relative rounded-xl overflow-hidden shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-l from-red-600/20 to-transparent z-10"></div>
               <img
-                src="/placeholder.svg?height=400&width=600"
+                src="/how-it-works-2.jpg"
                 width={600}
                 height={400}
                 alt="Blood recipient"
@@ -220,7 +221,7 @@ export function HowItWorks() {
                 <h4 className="text-xl font-semibold mb-2">{process.title}</h4>
                 <p className="text-gray-600">{process.description}</p>
                 {index < 2 && (
-                  <div className="hidden md:block h-0.5 w-16 bg-red-200 absolute right-[-8px] top-[24px] transform translate-x-full">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 overflow-hidden relative">
                     <div className="h-2 w-2 rounded-full bg-red-600 absolute right-0 top-[-3px]"></div>
                   </div>
                 )}

@@ -2,9 +2,9 @@ import { createBrowserRouter } from "react-router-dom";
 import { lazy } from "react";
 import * as React from "react";
 import Layout from "@/pages/layout";
+import PublicLayout from "../pages/layout/PublicLayout";
 import { HowItWorks } from "@/features/how-it-works";
 import DonorFormPage from "@/features/blood-donor/DonorCreation";
-
 
 const HomePage = lazy(() => import("@/pages/home"));
 const DashboardPage = lazy(() => import("@/pages/dashboard"));
@@ -17,16 +17,31 @@ const RegisterPage = lazy(() => import("@/components/ui/auth-image-panel"));
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/login",
     element: React.createElement(LoginPage),
-    index: true,
   },
   {
     path: "register",
     element: React.createElement(RegisterPage),
   },
-
-  
+  {
+    path: "/",
+    element: React.createElement(PublicLayout),
+    children: [
+      {
+        index: true,
+        element: React.createElement(HomePage),
+      },
+      {
+        path: "how-it-works",
+        element: React.createElement(HowItWorks),
+      },
+      {
+        path: "donor-creation",
+        element: React.createElement(DonorFormPage),
+      },
+    ],
+  },
   {
     path: "",
     element: React.createElement(Layout),
@@ -59,18 +74,9 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "home",
-    element: React.createElement(HomePage),
+    path: "donor-creation",
+    element: React.createElement(DonorFormPage),
   },
-  {
-    path:"how-it-works",
-    element:React.createElement(HowItWorks)
-  }
-,
-  {
-    path:"donor-creation",
-    element:React.createElement(DonorFormPage)
-  }
 ]);
 
 export default router;
