@@ -1,4 +1,4 @@
-import RegisterForm from "@/features/auth/AuthForms/RegistetForm";
+import { RegisterForm } from "@/features/auth/AuthForms/RegisterForm";
 
 const LoginPage = () => {
   return (

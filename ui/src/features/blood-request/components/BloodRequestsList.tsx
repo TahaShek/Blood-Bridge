@@ -362,7 +362,6 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { p } from "react-router/dist/development/fog-of-war-CvttGpNz";
 import { concludeBloodRequest } from "@/services/bloodRequestApi";
 
 export function RequestList() {
@@ -540,7 +539,7 @@ export function RequestList() {
                         onClick={() =>
                           handlePageChange(Math.max(1, filters.page - 1))
                         }
-                        disabled={filters.page === 1}
+                        // disabled={filters.page === 1}
                       />
                     </PaginationItem>
 
@@ -578,7 +577,7 @@ export function RequestList() {
                             Math.min(pagination.totalPages, filters.page + 1)
                           )
                         }
-                        disabled={filters.page === pagination.totalPages}
+                        // disabled={filters.page === pagination.totalPages}
                       />
                     </PaginationItem>
                   </PaginationContent>

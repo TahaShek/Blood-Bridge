@@ -1,4 +1,4 @@
-import { BloodRequest, BloodRequestList } from "@/types";
+import { BloodRequest } from "@/types";
 import apiClient from "./apiClient";
 
 export const createBloodRequest = async (values: BloodRequest) => {
@@ -62,7 +62,7 @@ export const acceptBloodRequest = async (donorId: string) => {
   }
 };
 
-export const concludeBloodRequest = async (reqId: string, payload) => {
+export const concludeBloodRequest = async (reqId: string, payload:any) => {
   try {
     const response = await apiClient.put(
       `/user/request/conclude-request/${reqId}`,

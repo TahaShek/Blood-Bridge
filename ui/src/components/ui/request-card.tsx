@@ -16,13 +16,17 @@ type RequestCardProps = {
   request: BloodRequestList;
   isOwner: boolean;
   onRefresh?: () => void;
-  fullfillRequest ?:() =>void
+  fullfillRequest?: () => void;
 };
 
-export function RequestCard({ request, isOwner, onRefresh,fullfillRequest }: RequestCardProps) {
+export function RequestCard({
+  request,
+  isOwner,
+  fullfillRequest,
+}: RequestCardProps) {
   const [isAccepting, setIsAccepting] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
-  const [showContact, setShowContact] = useState(false);
+  // const [showContact, setShowContact] = useState(false);
 
   const handleAccept = () => {
     setIsAccepting(true);
@@ -37,9 +41,9 @@ export function RequestCard({ request, isOwner, onRefresh,fullfillRequest }: Req
     }, 1500);
   };
 
-  const handleShowContact = () => {
-    setShowContact(true);
-  };
+  // const handleShowContact = () => {
+  //   setShowContact(true);
+  // };
 
   const formatDate = (dateString: string | Date) => {
     const date = new Date(dateString);
@@ -134,7 +138,7 @@ export function RequestCard({ request, isOwner, onRefresh,fullfillRequest }: Req
               <Button
                 variant="outline"
                 className="w-full"
-                onClick={handleShowContact}
+                // onClick={handleShowContact}
               >
                 View Contact Info
               </Button>

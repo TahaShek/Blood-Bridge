@@ -32,7 +32,7 @@ const FCMSetup = () => {
         title: "Request Accepted",
         description: "You've successfully volunteered as a donor",
       });
-    } catch (error) {
+    } catch (error:any) {
       toast({
         title: "Error",
         description: error.message || "Failed to accept request",

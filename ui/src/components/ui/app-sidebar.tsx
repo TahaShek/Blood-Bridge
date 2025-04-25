@@ -110,17 +110,15 @@
 //   );
 // }
 
-import { useEffect, type ReactNode } from "react";
+import {  type ReactNode } from "react";
 import {
   Droplet,
   Home,
   FileText,
   Bell,
-  History,
-  Settings,
+
   LogOut,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sidebar,
   SidebarContent,
@@ -132,7 +130,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import useAuth from "@/hooks/useAuth";
@@ -227,9 +225,8 @@ export function AppSidebar() {
 export function AppSidebarLayout({ children }: { children: ReactNode }) {
   const auth = useAuth();
 
-  const { isLoading, logout, user } = auth;
+  const { isLoading, logout } = auth;
 
-  const navigation = useNavigate();
 
   // useEffect(() => {
   //   if(!user) {

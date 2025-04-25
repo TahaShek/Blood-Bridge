@@ -2,7 +2,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "./badge";
 import { Button } from "./button";
 import { ArrowUpDown, ChevronDown, ChevronUp } from "lucide-react";
-import React from "react";
 
 export function createSortableColumn<T, K extends keyof T>(
   accessorKey: K,

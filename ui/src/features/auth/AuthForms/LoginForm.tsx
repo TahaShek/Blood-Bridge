@@ -22,7 +22,6 @@ export function LoginForm() {
     register,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<AuthFormSchema>({
     resolver: zodResolver(authSchema),
     defaultValues: authSchemaDefaultValues,

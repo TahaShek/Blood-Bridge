@@ -2,7 +2,7 @@ import { Droplet } from "lucide-react";
 import { FadeIn } from "./animations/fade-in";
 import { StaggerChildren, StaggerItem } from "./animations/stagger-children";
 import { Link } from "react-router";
-import { RegisterForm } from "@/features/auth/AuthForms/registerForm";
+import { RegisterForm } from "@/features/auth/AuthForms/RegisterForm";
 export default function AuthImagePanel() {
   return (
     <div className="flex min-h-screen">

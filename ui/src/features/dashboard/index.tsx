@@ -343,7 +343,7 @@ export default function DashboardOverview() {
                                   : ""
                               }
                             >
-                              {requestChartData.map((entry, index) => (
+                              {requestChartData.map((_, index) => (
                                 <Cell
                                   key={`cell-${index}`}
                                   fill={COLORS[index % COLORS.length]}
@@ -578,7 +578,7 @@ export default function DashboardOverview() {
                               paddingAngle={5}
                               dataKey="value"
                             >
-                              {requestChartData.map((entry, index) => (
+                              {requestChartData.map((_, index) => (
                                 <Cell
                                   key={`cell-${index}`}
                                   fill={COLORS[index % COLORS.length]}
