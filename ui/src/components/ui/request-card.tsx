@@ -16,9 +16,10 @@ type RequestCardProps = {
   request: BloodRequestList;
   isOwner: boolean;
   onRefresh?: () => void;
+  fullfillRequest ?:() =>void
 };
 
-export function RequestCard({ request, isOwner, onRefresh }: RequestCardProps) {
+export function RequestCard({ request, isOwner, onRefresh,fullfillRequest }: RequestCardProps) {
   const [isAccepting, setIsAccepting] = useState(false);
   const [isAccepted, setIsAccepted] = useState(false);
   const [showContact, setShowContact] = useState(false);
@@ -59,7 +60,7 @@ export function RequestCard({ request, isOwner, onRefresh }: RequestCardProps) {
               <Badge
                 variant={
                   request.urgencyLevel === "High"
-                    ? "destructive"
+                    ? "default"
                     : request.urgencyLevel === "Medium"
                       ? "default"
                       : "outline"
@@ -120,6 +121,7 @@ export function RequestCard({ request, isOwner, onRefresh }: RequestCardProps) {
           <Button
             variant="outline"
             className="w-full"
+            onClick={fullfillRequest}
             disabled={request.requestStatus === "Fulfilled"}
           >
             {request.requestStatus === "Fulfilled"

@@ -3,13 +3,43 @@
 
 import { useEffect } from "react";
 import { messaging, getToken, onMessage } from "../../firebase/index.ts";
-import { baseURL, firebaseTokenPublicKey } from "../../constants/index.js";
+import { firebaseTokenPublicKey } from "../../constants/index.js";
 import { fcmToken } from "@/services/authApi.ts";
 import { useToast } from "../ui/use-toast";
 import { ToastAction } from "../ui/toast";
+import useAuth from "@/hooks/useAuth.ts";
+import { acceptBloodRequest } from "@/services/bloodRequestApi.ts";
 
 const FCMSetup = () => {
   const { toast } = useToast();
+  const auth = useAuth();
+  console.log(auth.user?._id);
+
+  const handleAcceptRequest = async () => {
+    console.log(auth.user?._id);
+    if (!auth.user?._id) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to accept requests",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await acceptBloodRequest(auth.user._id);
+      toast({
+        title: "Request Accepted",
+        description: "You've successfully volunteered as a donor",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to accept request",
+        variant: "default",
+      });
+    }
+  };
 
   useEffect(() => {
     const requestPermission = async () => {
@@ -19,7 +49,6 @@ const FCMSetup = () => {
           const token = await getToken(messaging, {
             vapidKey: firebaseTokenPublicKey as string,
           });
-          console.log("FCM Token:", token);
           await fcmToken(JSON.stringify({ token }));
         }
       } catch (err) {
@@ -30,8 +59,7 @@ const FCMSetup = () => {
     requestPermission();
 
     onMessage(messaging, (payload: any) => {
-      console.log("Message received in foreground:", payload);
-
+      console.log(payload);
       toast({
         title: payload.notification.title,
         description: payload.notification.body,
@@ -39,20 +67,14 @@ const FCMSetup = () => {
           <>
             <ToastAction
               altText="Accept"
-              onClick={() => {
-                console.log("Notification accepted");
-                // Add your accept logic here
-              }}
+              onClick={handleAcceptRequest}
               className="bg-green-500 text-white hover:bg-green-600"
             >
               Accept
             </ToastAction>
             <ToastAction
               altText="Reject"
-              onClick={() => {
-                console.log("Notification rejected");
-                // Add your reject logic here
-              }}
+              onClick={() => console.log("Request rejected")}
               className="bg-red-500 text-white hover:bg-red-600"
             >
               Reject
@@ -61,7 +83,7 @@ const FCMSetup = () => {
         ),
       });
     });
-  }, [toast]);
+  }, [toast, auth, handleAcceptRequest]);
 
   return null;
 };

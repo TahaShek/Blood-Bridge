@@ -362,6 +362,8 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { toast } from "@/components/ui/use-toast";
+import { concludeBloodRequest } from "@/services/bloodRequestApi";
 
 export function RequestList() {
   const [filters, setFilters] = useState({
@@ -373,20 +375,47 @@ export function RequestList() {
   });
 
   const debouncedSearch = useDebounce(filters.search, 500);
-  const { bloodRequests, loading, error, refreshRequests, pagination } = useBloodRequests();
+  const { bloodRequests, loading, error, refreshRequests, pagination } =
+    useBloodRequests();
 
   useEffect(() => {
     refreshRequests({
       ...filters,
       search: debouncedSearch,
     });
-  }, [debouncedSearch, filters.bloodGroup, filters.urgencyLevel, filters.page]);
+  }, [
+    debouncedSearch,
+    filters.bloodGroup,
+    filters.urgencyLevel,
+    filters.page,
+    refreshRequests,
+    filters,
+  ]);
 
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
+  const fullfillRequest = async (requestId: string) => {
+    const payload = {
+      action: "",
+    };
+    try {
+      await concludeBloodRequest(requestId, payload);
+      toast({
+        title: "Success",
+        description: "Request marked as fulfilled",
+        variant: "default",
+      });
+      refreshRequests(filters); // Refresh the list
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to update request status",
+        variant: "destructive",
+      });
+    }
+  };
   if (loading) {
     return (
       <Card>
@@ -515,6 +544,7 @@ export function RequestList() {
                     request={request}
                     isOwner={true}
                     onRefresh={() => refreshRequests(filters)}
+                    fullfillRequest={() => fullfillRequest(request._id)}
                   />
                 ))}
               </div>
@@ -524,7 +554,9 @@ export function RequestList() {
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious
-                        onClick={() => handlePageChange(Math.max(1, filters.page - 1))}
+                        onClick={() =>
+                          handlePageChange(Math.max(1, filters.page - 1))
+                        }
                         disabled={filters.page === 1}
                       />
                     </PaginationItem>

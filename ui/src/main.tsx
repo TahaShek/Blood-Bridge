@@ -12,10 +12,10 @@ import FCMSetup from "./components/FCMsetup/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <FCMSetup />
     <AuthProvider>
       {" "}
-      {/* <AppInitializer /> */}
+      <FCMSetup />
+      <AppInitializer />
       <BloodRequestProvider>
         <RouterProvider router={router} />
       </BloodRequestProvider>
