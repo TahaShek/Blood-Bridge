@@ -15,7 +15,7 @@ const FCMSetup = () => {
   const auth = useAuth();
   console.log(auth.user?._id);
 
-  const handleAcceptRequest = async () => {
+  const handleAcceptRequest = async (bloodRequestId: string) => {
     console.log(auth.user?._id);
     if (!auth.user?._id) {
       toast({
@@ -27,7 +27,7 @@ const FCMSetup = () => {
     }
 
     try {
-      await acceptBloodRequest(auth.user._id);
+      await acceptBloodRequest(bloodRequestId);
       toast({
         title: "Request Accepted",
         description: "You've successfully volunteered as a donor",
@@ -60,14 +60,15 @@ const FCMSetup = () => {
 
     onMessage(messaging, (payload: any) => {
       console.log(payload);
+      const [messageText, bloodRequestId] = payload.notification.body.split("--").map(s => s.trim());
       toast({
         title: payload.notification.title,
-        description: payload.notification.body,
+        description: messageText,
         action: (
           <>
             <ToastAction
               altText="Accept"
-              onClick={handleAcceptRequest}
+              onClick={() => handleAcceptRequest(bloodRequestId)}
               className="bg-green-500 text-white hover:bg-green-600"
             >
               Accept

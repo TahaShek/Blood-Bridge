@@ -171,7 +171,12 @@ export function AppSidebar() {
     {
       href: "/requests",
       icon: <FileText className="h-5 w-5 mr-3" />,
-      label: "Blood Requests",
+      label: "My Requests",
+    },
+    {
+      href: "/all-requests",
+      icon: <FileText className="h-5 w-5 mr-3" />,
+      label: "Requests List",
     },
     {
       href: "/notifications",

@@ -1,9 +1,10 @@
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "@/components/ui/use-toast"
+import { getNotifications } from "@/services/notiApi"
 
 // Mock data
 const notifications = [
@@ -38,6 +39,18 @@ const notifications = [
 
 export function NotificationList() {
   const [userNotifications, setUserNotifications] = useState(notifications)
+
+  const fetchUserNotis = async () => {
+    const res = await getNotifications();
+    console.log("res::", res);
+    if(res.statusCode===200) {
+      setUserNotifications(res.notifications);
+    }
+  }
+
+  useEffect(() => {
+    fetchUserNotis()
+  }, []);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -113,7 +126,7 @@ export function NotificationList() {
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">{notification.message}</p>
-                  <p className="text-xs text-muted-foreground">{formatDate(notification.timestamp)}</p>
+                  {/* <p className="text-xs text-muted-foreground">{formatDate(notification?.createdAt)}</p> */}
                 </div>
                 <Button variant="outline" size="sm" onClick={() => handleAction(notification)}>
                   {notification.type === "request"

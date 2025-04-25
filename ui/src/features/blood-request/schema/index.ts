@@ -7,7 +7,7 @@ export const bloodRequestSchema = z.object({
   city: z.string().min(1),
   hospital: z.string().min(1),
   urgencyLevel: z.enum(["Low", "Medium", "High"]).default("Medium"),
-  contactNumber: z.string().regex(/^92\d{10}$/),
+  contactNumber: z.string(),
 });
 
 export type BloodRequest = z.infer<typeof bloodRequestSchema>;

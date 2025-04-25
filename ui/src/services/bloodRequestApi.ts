@@ -75,3 +75,14 @@ export const concludeBloodRequest = async (reqId: string, payload:any) => {
     );
   }
 };
+
+export const getAllReqs = async () => {
+  try {
+    const response = await apiClient.get(`/user/request/available-requests`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || "Failed to accept blood request"
+    );
+  }
+};

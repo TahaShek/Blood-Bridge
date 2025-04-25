@@ -15,6 +15,7 @@ const HistoryPage = lazy(() => import("@/pages/history"));
 const NotificationsPage = lazy(() => import("@/pages/notifications"));
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const RegisterPage = lazy(() => import("@/components/ui/auth-image-panel"));
+const AllRequests = lazy(() => import("../features/blood-request/components/AllBloodRequest"));
 
 const router = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ const router = createBrowserRouter([
             element: React.createElement(NewRequestPage),
           },
         ],
+      },
+      {
+        path: "all-requests",
+        element: React.createElement(AllRequests),
       },
       {
         path: "notifications",

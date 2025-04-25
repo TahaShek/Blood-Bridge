@@ -17,6 +17,20 @@ const getAllNotifications = asyncHandler(async (req, res) => {
     );
 });
 
+const markAsRead = asyncHandler(async (req, res) => {
+    const {id} = req.params;
+
+    const notification = await Notification.findByIdAndUpdate(id, { isRead: true });
+
+    return res.status(200).json(
+        new ApiResponse(
+            200,
+            { notification },
+            `Notification read successfully - ${user.name}`
+        )
+    );
+});
+
 const getNotificationById = asyncHandler(async (req, res) => {
     const { user } = req;
 
@@ -33,4 +47,4 @@ const getNotificationById = asyncHandler(async (req, res) => {
     );
 });
 
-export { getAllNotifications, getNotificationById };
+export { getAllNotifications, getNotificationById, markAsRead };
