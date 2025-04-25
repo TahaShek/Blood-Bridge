@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "react-router";
 import { PacmanLoader } from "react-spinners";
@@ -6,29 +6,34 @@ import { PacmanLoader } from "react-spinners";
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth();
   const navigate = useNavigate();
-
-  console.log("auth:: ", auth);
-
-  const getUser = async () => {
-    await auth?.fetchUser();
-    console.log("triggerd");
-    console.log("user", auth.user);
-    if (!auth?.user && !auth?.isLoading) {
-      navigate("/", { replace: true });
-    }
-  };
+  const [checkedAuth, setCheckedAuth] = useState(false); // Local state to track check completion
 
   useEffect(() => {
-    if (!auth?.user) {
-      getUser();
-    }
-  }, [auth?.user, auth?.isLoading, navigate]);
+    const checkAuth = async () => {
+      if (!auth.user) {
+        await auth.fetchUser();
+      }
+      setCheckedAuth(true); // Only set this after fetchUser completes
+    };
 
-  if (!auth?.user) {
-    return <PacmanLoader color="red" size={150} />;
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (checkedAuth && !auth.user && !auth.isLoading) {
+      navigate("/", { replace: true });
+    }
+  }, [checkedAuth, auth.user, auth.isLoading, navigate]);
+
+  if (!checkedAuth || auth.isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <PacmanLoader color="red" size={120} />
+      </div>
+    );
   }
 
-  return children;
+  return <>{children}</>;
 };
 
 export default AuthGuard;

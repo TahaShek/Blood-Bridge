@@ -248,6 +248,7 @@ export default function DashboardOverview() {
                         {data.record.requestStats.pending}
                       </div>
                       <Progress
+                      color="bg-amber-500"
                         value={
                           data.record.requestStats.total > 0
                             ? (data.record.requestStats.pending /
@@ -274,6 +275,7 @@ export default function DashboardOverview() {
                         {data.record.requestStats.fulfilled}
                       </div>
                       <Progress
+                      color="bg-green-500"
                         value={
                           data.record.requestStats.total > 0
                             ? (data.record.requestStats.fulfilled /
