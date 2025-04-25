@@ -362,6 +362,8 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
+import { p } from "react-router/dist/development/fog-of-war-CvttGpNz";
+import { concludeBloodRequest } from "@/services/bloodRequestApi";
 
 export function RequestList() {
   const [filters, setFilters] = useState({
@@ -375,6 +377,15 @@ export function RequestList() {
   const debouncedSearch = useDebounce(filters.search, 500);
   const { bloodRequests, loading, error, refreshRequests, pagination } =
     useBloodRequests();
+
+  const fullfillRequest = async (requestId: string) => {
+    try {
+      const payload = {
+        action: "FulFilled",
+      };
+      await concludeBloodRequest(requestId, payload);
+    } catch (error) {}
+  };
 
   useEffect(() => {
     refreshRequests({
@@ -516,6 +527,7 @@ export function RequestList() {
                     request={request}
                     isOwner={true}
                     onRefresh={() => refreshRequests(filters)}
+                    fullfillRequest={() => fullfillRequest(request._id)}
                   />
                 ))}
               </div>
