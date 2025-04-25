@@ -99,18 +99,6 @@ export default function DonorListPage() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <DonorTable />
-
-          <div className="mt-8 text-center">
-            <p className="text-gray-500 mb-4">
-              Don't see a compatible donor? Register a blood request and we'll
-              notify donors when they become available.
-            </p>
-            <Link to="register">
-              <Button className="bg-red-600 hover:bg-red-700">
-                Request Blood
-              </Button>
-            </Link>
-          </div>
         </motion.div>
       </div>
       {/* </section> */}
