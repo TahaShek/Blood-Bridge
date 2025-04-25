@@ -35,12 +35,12 @@ const sendBloodRequestNotification = async ({
       notification: {
         title: title,
         body: `${requestorName} needs ${bloodGroup} near ${city} - urgency: ${urgencyLevel}    `,
-        data: {
-          bloodRequestId: String(bloodRequestId), // Ensure string values
-          bloodGroup: String(bloodGroup),
-          city: String(city),
-          urgencyLevel: String(urgencyLevel),
-        },
+        // data: {
+        //   bloodRequestId: String(bloodRequestId), // Ensure string values
+        //   bloodGroup: String(bloodGroup),
+        //   city: String(city),
+        //   urgencyLevel: String(urgencyLevel),
+        // },
       },
       // data: {
       //     bloodRequestId: bloodRequestId,  // Custom data to navigate to

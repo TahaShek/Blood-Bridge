@@ -333,7 +333,7 @@
 //     </Card>
 //   );
 // }
-// src/components/RequestList.tsx
+
 import { useState, useEffect } from "react";
 import { useDebounce } from "@/hooks/useDebounce";
 import {
@@ -362,8 +362,6 @@ import {
   PaginationLink,
   PaginationNext,
 } from "@/components/ui/pagination";
-import { toast } from "@/components/ui/use-toast";
-import { concludeBloodRequest } from "@/services/bloodRequestApi";
 
 export function RequestList() {
   const [filters, setFilters] = useState({
@@ -383,39 +381,13 @@ export function RequestList() {
       ...filters,
       search: debouncedSearch,
     });
-  }, [
-    debouncedSearch,
-    filters.bloodGroup,
-    filters.urgencyLevel,
-    filters.page,
-    refreshRequests,
-    filters,
-  ]);
+  }, [debouncedSearch, filters.bloodGroup, filters.urgencyLevel, filters.page]);
 
   const handlePageChange = (page: number) => {
     setFilters((prev) => ({ ...prev, page }));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  const fullfillRequest = async (requestId: string) => {
-    const payload = {
-      action: "",
-    };
-    try {
-      await concludeBloodRequest(requestId, payload);
-      toast({
-        title: "Success",
-        description: "Request marked as fulfilled",
-        variant: "default",
-      });
-      refreshRequests(filters); // Refresh the list
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to update request status",
-        variant: "destructive",
-      });
-    }
-  };
+
   if (loading) {
     return (
       <Card>
@@ -544,7 +516,6 @@ export function RequestList() {
                     request={request}
                     isOwner={true}
                     onRefresh={() => refreshRequests(filters)}
-                    fullfillRequest={() => fullfillRequest(request._id)}
                   />
                 ))}
               </div>
