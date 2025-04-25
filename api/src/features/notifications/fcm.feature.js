@@ -12,7 +12,7 @@ const sendBloodRequestNotification = async ({ bloodRequestId, bloodGroup, city, 
             ], "address.city": city,
         });
 
-        const tokens = users.map((u) => u.fcmToken).filter(Boolean);
+    const tokens = users.map((u) => u.fcmToken).filter(Boolean);
 
         if (!tokens.length) {
             return {
@@ -61,26 +61,50 @@ const sendBloodRequestNotification = async ({ bloodRequestId, bloodGroup, city, 
     } catch (error) {
         console.error("FCM send error:", error?.message);
     }
+
+    const uniqueTokens = [...new Set(tokens)];
+
+    console.log("tokens", uniqueTokens);
+
+    const message = {
+      notification: {
+        title: title,
+        body: `${requestorName} needs ${bloodGroup} near ${city} - urgency: ${urgencyLevel}`,
+        
+      },
+      tokens: uniqueTokens,
+    };
+
+    await admin.messaging().sendEachForMulticast(message);
+    console.log(`Notification sent to ${tokens.length} users`);
+
+    return {
+      status: 200,
+      message: `Notifications Sent to ${tokens.length} users`,
+    };
+  } catch (error) {
+    console.error("FCM send error:", error?.message);
+  }
 };
 
 const sendDonorAddedNotification = async (userId, bloodRequestId, donorId, donorName, donorContact, donorCity, donorBloodGroup, title = "Donor Available") => {
     try {
         const owner = await User.findById(userId);
 
-        const token = owner.fcmToken;
+    const token = owner.fcmToken;
 
-        console.log("owner", owner.fcmToken);
+    console.log("owner", owner.fcmToken);
 
-        const message = {
-            notification: {
-                title: title,
-                body: `${donorName} accepted your blood request! phone: ${donorContact} - city: ${donorCity} - blood group: ${donorBloodGroup}`,
-            },
-            tokens: [token],
-        };
+    const message = {
+      notification: {
+        title: title,
+        body: `${donorName} accepted your blood request! phone: ${donorContact} - city: ${donorCity} - blood group: ${donorBloodGroup}`,
+      },
+      tokens: [token],
+    };
 
-        await admin.messaging().sendEachForMulticast(message);
-        console.log(`Notification sent to ${owner.name}`);
+    await admin.messaging().sendEachForMulticast(message);
+    console.log(`Notification sent to ${owner.name}`);
 
         await Notification.create({
             user: owner._id,
