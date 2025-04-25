@@ -4,9 +4,9 @@ import { BloodRequest } from "../../models/bloodRequest.model.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { incrementDonationStats, incrementRequestStats, updateRequestStatusStats } from "../../features/user/analytics.feature.js";
+import { incrementDonationStats, incrementRequestStats, markRequestAsFullFilled, updateRequestStatusStats } from "../../features/user/analytics.feature.js";
 import { incrementTotalBloodRequestsStats } from "../../features/admin/adminAnalytics.feature.js";
-import { sendBloodRequestNotification } from "../../features/notifications/fcm.feature.js";
+import { sendBloodRequestNotification, sendDonorAddedNotification } from "../../features/notifications/fcm.feature.js";
 import { requestFilters, requestStatuses } from "../../constants/constants.js";
 import { buildFilters, paginateQuery, validateEnumValues } from "../../utils/databaseHelpers.js";
 
@@ -77,7 +77,7 @@ const getUserBloodRequest = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid request id");
     }
 
-    const bloodRequest = await BloodRequest.findOne({ _id: id, requestor: user._id });
+    const bloodRequest = await BloodRequest.findOne({ _id: id, requestor: user._id }).populate("donors", "name phoneNumber city bloodGroup").lean();
 
     if (!bloodRequest) {
         throw new ApiError(404, `No request found against id: ${id}`);
@@ -167,6 +167,10 @@ const addDonorInBloodRequest = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Blood request not found");
     }
 
+    if(bloodRequest.requestor === user._id) {
+        throw new ApiError(400, "Cannot donate to your own request");
+    }
+
     const alreadyDonated = bloodRequest.donors.some(donor => donor.equals(user._id));
 
     if(alreadyDonated) {
@@ -181,9 +185,12 @@ const addDonorInBloodRequest = asyncHandler(async (req, res) => {
 
     if(bloodRequest.donors.length === bloodRequest.numberOfDonors) {
         bloodRequest.requestStatus = "Fulfilled";
+        await markRequestAsFullFilled(bloodRequest.requestor);
     }
 
     await bloodRequest.save();
+
+    await sendDonorAddedNotification(bloodRequest.requestor, user.name, user.phoneNumber, user.address.city, user.bloodGroup);
 
     const totalDonationsByUser = await incrementDonationStats(user._id, bloodRequest.requestStatus === "Fulfilled");
 

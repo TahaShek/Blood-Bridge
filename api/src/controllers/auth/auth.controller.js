@@ -92,7 +92,7 @@ const signUp = asyncHandler(async (req, res) => {
     bloodGroup,
     address,
     phoneNumber,
-    isDonating
+    isDonating: true,
   });
 
   const createdUser = await User.findById(user._id).select(

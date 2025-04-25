@@ -14,17 +14,17 @@ const FCMSetup = () => {
             vapidKey: firebaseTokenPublicKey as string,
           });
           console.log("FCM Token:", token);
-          await fcmToken();
+          await fcmToken(JSON.stringify({ token }));
 
           // // Save token to backend
-          await fetch(`${baseURL}/user/fcm/save-token`, {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ token }),
-          });
+          // await fetch(`${baseURL}/user/fcm/save-token`, {
+          //   method: "POST",
+          //   credentials: "include",
+          //   headers: {
+          //     "Content-Type": "application/json",
+          //   },
+          //   body: JSON.stringify({ token }),
+          // });
         } else {
           console.log("Permission not granted");
         }
@@ -38,7 +38,7 @@ const FCMSetup = () => {
     // Listen for foreground messages
     onMessage(messaging, (payload: any) => {
       console.log("Message received in foreground:", payload);
-      // alert(payload.notification.title + ": " + payload.notification.body);
+      alert(payload.notification.title + ": " + payload.notification.body);
     });
   }, []);
 

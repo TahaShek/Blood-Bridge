@@ -22,6 +22,8 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requestorName, r
 
         const uniqueTokens = [...new Set(tokens)];
 
+        console.log("tokens", uniqueTokens);
+
         const message = {
             notification: {
                 title: title,
@@ -43,4 +45,32 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requestorName, r
     }
 };
 
-export { sendBloodRequestNotification };
+const sendDonorAddedNotification = async (userId, donorName, donorContact, donorCity, donorBloodGroup, title = "Donor Available") => {
+    try {
+        const owner = await User.findById(userId);
+
+        const token = owner.fcmToken;
+
+        console.log("owner", owner.fcmToken);
+
+        const message = {
+            notification: {
+                title: title,
+                body: `${donorName} accepted your blood request! phone: ${donorContact} - city: ${donorCity} - blood group: ${donorBloodGroup}`,
+            },
+            tokens: [token],
+        };
+
+        await admin.messaging().sendEachForMulticast(message);
+        console.log(`Notification sent to ${owner.name}`);
+
+        return {
+            status: 200,
+            message: `Notifications Sent to ${owner.name}`
+        };
+    } catch (error) {
+        console.error("FCM send error:", error?.message);
+    }
+};
+
+export { sendBloodRequestNotification, sendDonorAddedNotification };
