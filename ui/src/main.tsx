@@ -15,7 +15,7 @@ createRoot(document.getElementById("root")!).render(
     <FCMSetup />
     <AuthProvider>
       {" "}
-      <AppInitializer />
+      {/* <AppInitializer /> */}
       <BloodRequestProvider>
         <RouterProvider router={router} />
       </BloodRequestProvider>

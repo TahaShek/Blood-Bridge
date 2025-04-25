@@ -22,11 +22,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [error, setError] = useState<string | null>(null);
 
   const fetchUser = useCallback(async () => {
+    console.log("HIt")
     try {
       setIsLoading(true);
       const userData = await me();
       setUser(userData);
-      console.log(userData, "user in auth slice");
+      console.log("user in auth slice", userData);
     } catch (err) {
       console.error("Failed to fetch user", err);
       logout();
@@ -64,10 +65,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         phoneNumber,
       };
       const { statusCode, message } = await registerUser(credentials);
-      if(statusCode === 201) {
+      if (statusCode === 201) {
         toast.success("Account created successfully");
       } else {
-        toast.error(message)
+        toast.error(message);
       }
       await login(loginCreds);
     } catch (err) {
@@ -80,9 +81,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const logout = useCallback(async () => {
     setIsLoading(true);
-    await logoutUser();
-    setUser(null);
-    setIsLoading(false);
+    try {
+      await logoutUser();
+    } catch (error) {
+    } finally {
+      setUser(null);
+      setIsLoading(false);
+    }
     // Additional cleanup can go here
   }, []);
 
