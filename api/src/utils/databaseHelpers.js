@@ -20,7 +20,7 @@ const paginateQuery = async (Model, query, reqQuery) => {
     const skip = (page - 1) * limit;
 
     const [results, totalDocs] = await Promise.all([
-        Model.find(query).select("-password -refreshToken").skip(skip).limit(limit),
+        Model.find(query).select("-refreshToken").skip(skip).limit(limit),
         Model.countDocuments(query),
     ]);
 

@@ -56,9 +56,9 @@ export const me = async () => {
   return response.data.user;
 };
 
-export const fcmToken = async () => {
+export const fcmToken = async (token: string) => {
   try {
-    const response = apiClient.post("/user/fcm/save-token");
+    const response = apiClient.post("/user/fcm/save-token", token);
     return response;
   } catch (error: any) {
     const message =

@@ -20,6 +20,7 @@ const ensureUserAnalytics = async (userId) => {
     return analytics;
 };
 
+// TODO: can be enhanced with params
 const incrementRequestStats = async (userId) => {
     const userAnalytics = await ensureUserAnalytics(userId);
 
@@ -29,6 +30,15 @@ const incrementRequestStats = async (userId) => {
 
     await userAnalytics.save();
 };
+
+const markRequestAsFullFilled = async(userId) => {
+    const userAnalytics = await ensureUserAnalytics(userId);
+
+    userAnalytics.requestStats.fulfilled += 1;
+    userAnalytics.requestStats.pending -= 1;
+
+    await userAnalytics.save();
+}
 
 const updateRequestStatusStats = async (userId, fromStatus, toStatus) => {
     const incObj = {};
@@ -58,4 +68,4 @@ const incrementDonationStats = async (userId, isSuccessful) => {
     return analytics.donationStats.total;
 }
 
-export { ensureUserAnalytics, incrementRequestStats, updateRequestStatusStats, createUserRecord, incrementDonationStats };
+export { ensureUserAnalytics, incrementRequestStats, updateRequestStatusStats, createUserRecord, incrementDonationStats, markRequestAsFullFilled };
