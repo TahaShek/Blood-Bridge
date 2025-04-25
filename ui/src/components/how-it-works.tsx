@@ -31,10 +31,10 @@ export function HowItWorks() {
       <div className="container px-4 md:px-6 mx-auto">
         <motion.div
           className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.5 }}
+          // initial={{ opacity: 0, y: 20 }}
+          // whileInView={{ opacity: 1, y: 0 }}
+          // viewport={{ once: true, margin: "-100px" }}
+          // transition={{ duration: 0.5 }}
         >
           <h2 className="text-3xl font-bold text-red-600 sm:text-4xl md:text-5xl mb-4">
             How Blood Bridge Works
@@ -48,11 +48,11 @@ export function HowItWorks() {
         {/* First section - Donors */}
         <div className="grid items-stretch gap-8 py-12 lg:grid-cols-2 lg:gap-12 xl:gap-16">
           <motion.div
-            className="order-1 h-full flex flex-col"
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5 }}
+          // className="order-1 h-full flex flex-col"
+          // initial={{ opacity: 0, x: -50 }}
+          // whileInView={{ opacity: 1, x: 0 }}
+          // viewport={{ once: true, margin: "-100px" }}
+          // transition={{ duration: 0.5 }}
           >
             <div className="relative rounded-xl overflow-hidden shadow-xl">
               <div className="absolute inset-0 bg-gradient-to-r from-red-600/20 to-transparent z-10"></div>
@@ -68,14 +68,14 @@ export function HowItWorks() {
           </motion.div>
           <motion.div
             className="order-2 space-y-6 lg:space-y-8 h-full flex flex-col"
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
+            // variants={containerVariants}
+            // initial="hidden"
+            // whileInView="visible"
+            // viewport={{ once: true, margin: "-100px" }}
           >
             <motion.h2
               className="text-2xl font-bold text-red-600 sm:text-3xl md:text-4xl"
-              variants={itemVariants}
+              // variants={itemVariants}
             >
               For Blood Donors
             </motion.h2>
@@ -91,7 +91,7 @@ export function HowItWorks() {
                 <motion.li
                   key={index}
                   className="flex items-start gap-3"
-                  variants={itemVariants}
+                  // variants={itemVariants}
                 >
                   <CheckCircle className="flex-shrink-0 h-5 w-5 text-red-600 mt-0.5" />
                   <span className="text-gray-700">{item}</span>
@@ -99,7 +99,7 @@ export function HowItWorks() {
               ))}
             </ul>
 
-            <motion.div variants={itemVariants}>
+            <motion.div >
               <Link to="/donor-form">
                 <Button className="bg-red-600 hover:bg-red-700 mt-4">
                   Become a Donor

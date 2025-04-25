@@ -225,18 +225,17 @@ export function AppSidebar() {
 
 // Layout component remains exactly the same
 export function AppSidebarLayout({ children }: { children: ReactNode }) {
-
   const auth = useAuth();
 
   const { isLoading, logout, user } = auth;
 
   const navigation = useNavigate();
 
-  useEffect(() => {
-    if(!user) {
-      navigation("/");
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if(!user) {
+  //     navigation("/");
+  //   }
+  // }, [user]);
 
   return (
     <SidebarProvider>
@@ -246,21 +245,21 @@ export function AppSidebarLayout({ children }: { children: ReactNode }) {
           <div className="flex justify-between items-center h-16 px-4 border-b">
             <SidebarTrigger />
             <Button
-            type="button"
-            className="bg-red-700 hover:bg-red-800 text-lg cursor-pointer"
-            onClick={() => logout()}
-          >
-            {isLoading ? (
-              <motion.span
-                animate={{ opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                logging out...
-              </motion.span>
-            ) : (
-              "Log out"
-            )}
-          </Button>
+              type="button"
+              className="bg-red-700 hover:bg-red-800 text-lg cursor-pointer"
+              onClick={() => logout()}
+            >
+              {isLoading ? (
+                <motion.span
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  logging out...
+                </motion.span>
+              ) : (
+                "Log out"
+              )}
+            </Button>
           </div>
           <main className="flex-1 overflow-auto p-4 md:p-6 bg-slate-50">
             {children}

@@ -16,7 +16,7 @@ const FCMSetup = () => {
           console.log("FCM Token:", token);
           await fcmToken(JSON.stringify({ token }));
 
-          // // Save token to backend
+          // // // Save token to backend
           // await fetch(`${baseURL}/user/fcm/save-token`, {
           //   method: "POST",
           //   credentials: "include",
