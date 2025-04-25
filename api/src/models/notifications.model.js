@@ -10,14 +10,20 @@ const notificationSchema = new mongoose.Schema({
     },
     title: String,
     message: String,
-    relatedUsers: [{
+    type: {
+        type: String,
+        enum: ["General", "Blood Request", "Donor Added"],
+        default: "General",
+    },
+    isRead: {
+        type: Boolean,
+        default: false,
+    },
+    relatedRequest: { type: mongoose.Schema.Types.ObjectId, ref: "BloodRequests" },
+    relatedUser: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Users",
-    }],
-    receivedAt: {
-        type: Date,
-        default: () => new Date,
-    }
+    },
 }, { timestamps: true });
 
 export const Notification = mongoose.model("Notifications", notificationSchema);

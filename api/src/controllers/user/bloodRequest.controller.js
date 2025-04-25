@@ -22,7 +22,7 @@ const createBloodRequest = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while creating request");
     }
 
-    const notificationStat = await sendBloodRequestNotification({ ...req.body, requestorName: user.name, requestorId: user._id })
+    const notificationStat = await sendBloodRequestNotification({ bloodRequestId: bloodRequest._id ,...req.body, requestorName: user.name, requestorId: user._id })
 
     const notificationStatus = notificationStat;
 
@@ -190,7 +190,7 @@ const addDonorInBloodRequest = asyncHandler(async (req, res) => {
 
     await bloodRequest.save();
 
-    await sendDonorAddedNotification(bloodRequest.requestor, user.name, user.phoneNumber, user.address.city, user.bloodGroup);
+    await sendDonorAddedNotification(bloodRequest.requestor, bloodRequest._id, user._id,user.name, user.phoneNumber, user.address.city, user.bloodGroup);
 
     const totalDonationsByUser = await incrementDonationStats(user._id, bloodRequest.requestStatus === "Fulfilled");
 

@@ -1,7 +1,8 @@
 import { admin } from "../../firebase/firebase-admin.js";
+import { Notification } from "../../models/notifications.model.js";
 import { User } from "../../models/user.model.js"
 
-const sendBloodRequestNotification = async ({ bloodGroup, city, requestorName, requestorId, title = "Blood Donation Request", urgencyLevel }) => {
+const sendBloodRequestNotification = async ({ bloodRequestId, bloodGroup, city, requestorName, requestorId, title = "Blood Donation Request", urgencyLevel }) => {
     try {
         const users = await User.find({
             _id: { $ne: requestorId },
@@ -29,11 +30,28 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requestorName, r
                 title: title,
                 body: `${requestorName} needs ${bloodGroup} near ${city} - urgency: ${urgencyLevel}`,
             },
+            // data: {
+            //     bloodRequestId: bloodRequestId,  // Custom data to navigate to
+            //     bloodGroup: bloodGroup,
+            //     city: city,
+            //     urgencyLevel: urgencyLevel.toString(),
+            //     click_action: 'FLUTTER_NOTIFICATION_CLICK', // This is a special action key
+            //   },
             tokens: uniqueTokens,
         };
 
         await admin.messaging().sendEachForMulticast(message);
         console.log(`Notification sent to ${tokens.length} users`);
+
+        await Notification.insertMany(
+            users.map(u => ({
+                user: u._id,
+                title,
+                message: `${requestorName} needs ${bloodGroup} near ${city} - urgency: ${urgencyLevel}`,
+                relatedRequest: bloodRequestId,
+                type: "Blood Request",
+            }))
+        );
 
         return {
             status: 200,
@@ -45,7 +63,7 @@ const sendBloodRequestNotification = async ({ bloodGroup, city, requestorName, r
     }
 };
 
-const sendDonorAddedNotification = async (userId, donorName, donorContact, donorCity, donorBloodGroup, title = "Donor Available") => {
+const sendDonorAddedNotification = async (userId, bloodRequestId, donorId, donorName, donorContact, donorCity, donorBloodGroup, title = "Donor Available") => {
     try {
         const owner = await User.findById(userId);
 
@@ -63,6 +81,15 @@ const sendDonorAddedNotification = async (userId, donorName, donorContact, donor
 
         await admin.messaging().sendEachForMulticast(message);
         console.log(`Notification sent to ${owner.name}`);
+
+        await Notification.create({
+            user: owner._id,
+            title,
+            message: `${donorName} accepted your blood request! phone: ${donorContact} - city: ${donorCity} - blood group: ${donorBloodGroup}`,
+            relatedRequest: bloodRequestId,
+            relatedUsers: donorId,
+            type: "Donor Added"
+        });
 
         return {
             status: 200,

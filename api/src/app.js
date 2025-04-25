@@ -28,10 +28,12 @@ app.use("/api/v1/auth", authRoutes);
 import userRoutes from "./routes/user/user.routes.js"
 import bloodRequestRoutes from "./routes/user/bloodRequest.routes.js"
 import userRecordRoutes from "./routes/user/record.routes.js"
+import notificationRoutes from "./routes/user/notifications.routes.js"
 
 app.use("/api/v1/user/", userRoutes);
 app.use("/api/v1/user/request", bloodRequestRoutes);
 app.use("/api/v1/user/record", userRecordRoutes);
+app.use("/api/v1/user/notification", notificationRoutes);
 /* /user routes */
 
 /* admin routes */
