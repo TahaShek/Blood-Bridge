@@ -30,13 +30,12 @@ const sendBloodRequestNotification = async ({ bloodRequestId, bloodGroup, city, 
                 title: title,
                 body: `${requestorName} needs ${bloodGroup} near ${city} - urgency: ${urgencyLevel}`,
             },
-            // data: {
-            //     bloodRequestId: bloodRequestId,  // Custom data to navigate to
-            //     bloodGroup: bloodGroup,
-            //     city: city,
-            //     urgencyLevel: urgencyLevel.toString(),
-            //     click_action: 'FLUTTER_NOTIFICATION_CLICK', // This is a special action key
-            //   },
+            data: {
+                bloodRequestId: String(bloodRequestId),  // Ensure string values
+                bloodGroup: String(bloodGroup),
+                city: String(city),
+                urgencyLevel: String(urgencyLevel),
+            },
             tokens: uniqueTokens,
         };
 
@@ -61,30 +60,6 @@ const sendBloodRequestNotification = async ({ bloodRequestId, bloodGroup, city, 
     } catch (error) {
         console.error("FCM send error:", error?.message);
     }
-
-    const uniqueTokens = [...new Set(tokens)];
-
-    console.log("tokens", uniqueTokens);
-
-    const message = {
-      notification: {
-        title: title,
-        body: `${requestorName} needs ${bloodGroup} near ${city} - urgency: ${urgencyLevel}`,
-        
-      },
-      tokens: uniqueTokens,
-    };
-
-    await admin.messaging().sendEachForMulticast(message);
-    console.log(`Notification sent to ${tokens.length} users`);
-
-    return {
-      status: 200,
-      message: `Notifications Sent to ${tokens.length} users`,
-    };
-  } catch (error) {
-    console.error("FCM send error:", error?.message);
-  }
 };
 
 const sendDonorAddedNotification = async (userId, bloodRequestId, donorId, donorName, donorContact, donorCity, donorBloodGroup, title = "Donor Available") => {
