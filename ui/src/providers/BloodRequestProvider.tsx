@@ -1,12 +1,27 @@
-import  { createContext, useContext, useEffect, useState } from 'react';
+// src/providers/BloodRequestProvider.tsx
+import { createContext, useContext, useEffect, useState } from 'react';
 import { BloodRequestList } from "@/types";
 import { fetchBloodRequests } from '@/services/bloodRequestApi';
 
 interface BloodRequestContextType {
-  bloodRequests: BloodRequest[];
+  bloodRequests: BloodRequestList[];
   loading: boolean;
   error: string | null;
-  refreshRequests: () => Promise<void>;
+  pagination: {
+    page: number;
+    limit: number;
+    totalPages: number;
+    totalResults: number;
+  } | null;
+  refreshRequests: (filters?: BloodRequestFilters) => Promise<void>;
+}
+
+interface BloodRequestFilters {
+  search?: string;
+  bloodGroup?: string;
+  urgencyLevel?: string;
+  page?: number;
+  limit?: number;
 }
 
 const BloodRequestContext = createContext<BloodRequestContextType | undefined>(undefined);
@@ -15,13 +30,17 @@ export const BloodRequestProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const [bloodRequests, setBloodRequests] = useState<BloodRequestList[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<BloodRequestContextType['pagination']>(null);
 
-  const fetchData = async () => {
+  const refreshRequests = async (filters: BloodRequestFilters = { page: 1, limit: 6 }) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchBloodRequests();
+      
+      const { data, pagination: paginationData } = await fetchBloodRequests(filters);
+      
       setBloodRequests(data);
+      setPagination(paginationData);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch blood requests');
     } finally {
@@ -30,7 +49,7 @@ export const BloodRequestProvider: React.FC<{ children: React.ReactNode }> = ({ 
   };
 
   useEffect(() => {
-    fetchData();
+    refreshRequests();
   }, []);
 
   return (
@@ -39,7 +58,8 @@ export const BloodRequestProvider: React.FC<{ children: React.ReactNode }> = ({ 
         bloodRequests, 
         loading, 
         error,
-        refreshRequests: fetchData 
+        pagination,
+        refreshRequests,
       }}
     >
       {children}
@@ -47,7 +67,6 @@ export const BloodRequestProvider: React.FC<{ children: React.ReactNode }> = ({ 
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useBloodRequests = () => {
   const context = useContext(BloodRequestContext);
   if (context === undefined) {

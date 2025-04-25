@@ -1,14 +1,5 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { DonorTable } from "@/features/donor-list";
 import { Link } from "react-router";
 
@@ -16,7 +7,7 @@ export default function DonorListPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="w-full py-12 md:py-16 bg-gradient-to-b from-red-50 to-white">
+      <section className="w-full py-12 md:py-12 bg-gradient-to-b from-red-50 to-white">
         <div className="container px-4 md:px-6 mx-auto">
           <motion.div
             className="max-w-3xl mx-auto text-center"
@@ -34,7 +25,7 @@ export default function DonorListPage() {
         </div>
       </section>
 
-      {/* Filter Section */}
+      {/* Filter Section
       <section className="w-full py-8 bg-white border-b">
         <div className="container px-4 md:px-6 mx-auto">
           <motion.div
@@ -96,33 +87,33 @@ export default function DonorListPage() {
             </div>
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* Donor Table Section */}
-      <section className="w-full py-8 md:py-12 bg-white">
-        <div className="container px-4 md:px-6 mx-auto">
-          <motion.div
-            className="max-w-5xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <DonorTable />
+      {/* <section className="w-full py-8 md:py-12 bg-white"> */}
+      <div className="container px-4 md:px-6 mx-auto">
+        <motion.div
+          className="max-w-5xl mx-auto"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <DonorTable />
 
-            <div className="mt-8 text-center">
-              <p className="text-gray-500 mb-4">
-                Don't see a compatible donor? Register a blood request and we'll
-                notify donors when they become available.
-              </p>
-              <Link to="register">
-                <Button className="bg-red-600 hover:bg-red-700">
-                  Request Blood
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+          <div className="mt-8 text-center">
+            <p className="text-gray-500 mb-4">
+              Don't see a compatible donor? Register a blood request and we'll
+              notify donors when they become available.
+            </p>
+            <Link to="register">
+              <Button className="bg-red-600 hover:bg-red-700">
+                Request Blood
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+      {/* </section> */}
 
       {/* Information Section */}
       <section className="w-full py-12 md:py-24 bg-gray-50">
@@ -149,7 +140,7 @@ export default function DonorListPage() {
                   <li>Coordinate the donation time and location</li>
                 </ol>
                 <div className="mt-4">
-                  <Link href="/register">
+                  <Link to="/register">
                     <Button
                       variant="outline"
                       className="border-red-600 text-red-600 hover:bg-red-50"
@@ -176,7 +167,7 @@ export default function DonorListPage() {
                   <li>• The donation process takes about 10-15 minutes</li>
                 </ul>
                 <div className="mt-4">
-                  <Link href="/how-it-works">
+                  <Link to="/how-it-works">
                     <Button
                       variant="outline"
                       className="border-red-600 text-red-600 hover:bg-red-50"

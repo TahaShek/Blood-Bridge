@@ -8,9 +8,11 @@ import { AuthProvider } from "./providers/AuthProvider"; // Import the AuthProvi
 import { BloodRequestProvider } from "./providers/BloodRequestProvider.tsx";
 import { Toaster } from "@/components/ui/toaster";
 import AppInitializer from "./providers/AppInitilizer.tsx";
+import FCMSetup from "./components/FCMsetup/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <FCMSetup />
     <AuthProvider>
       {" "}
       <AppInitializer />

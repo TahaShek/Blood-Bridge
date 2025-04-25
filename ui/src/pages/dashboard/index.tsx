@@ -1,4 +1,3 @@
-import FCMSetup from "@/components/FCMsetup";
 import DashboardOverview from "@/features/dashboard";
 
 export default function DashboardPage() {
@@ -11,7 +10,7 @@ export default function DashboardPage() {
         </p>
       </div> */}
       {/* isko dekh lein */}
-      <FCMSetup />
+      {/* <FCMSetup /> */}
       <DashboardOverview />
     </div>
   );

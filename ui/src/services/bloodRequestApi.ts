@@ -11,14 +11,32 @@ export const createBloodRequest = async (values: BloodRequest) => {
   } catch (error) {}
 };
 
-export const fetchBloodRequests = async (): Promise<BloodRequestList[]> => {
+
+export const fetchBloodRequests = async (filters: {
+  search?: string;
+  bloodGroup?: string;
+  urgencyLevel?: string;
+  page?: number;
+  limit?: number;
+} = {}) => {
   try {
-    const response = await apiClient.get("user/request");
-    console.log(response.data.bloodRequests);
-    return response.data.bloodRequests;
+    const params = {
+      ...(filters.search && { city: filters.search }),
+      ...(filters.bloodGroup && filters.bloodGroup !== 'all' && { bloodGroup: filters.bloodGroup }),
+      ...(filters.urgencyLevel && filters.urgencyLevel !== 'all' && { urgencyLevel: filters.urgencyLevel }),
+      page: filters.page || 1,
+      limit: filters.limit || 6
+    };
+
+    const response = await apiClient.get("user/request", { params });
+    
+    return {
+      data: response.data.bloodRequests,
+      pagination: response.data.pagination
+    };
   } catch (error: any) {
     throw new Error(
       error.response?.data?.message || "Failed to fetch blood requests"
     );
   }
-};
+}
